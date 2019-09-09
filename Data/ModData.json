@@ -1,0 +1,36 @@
+{
+	"allowSkipSplashScreens" : true,
+	"startFromMainMenu" : false,
+	"interactActionId" : "recruit",
+	"playerOneInputConfigs" : [
+		{
+			"up": "UpArrow",
+			"down": "DownArrow",
+			"left": "LeftArrow",
+			"right": "RightArrow",
+			"jump": "D",
+			"quickAttack": "A",
+			"heavyAttack": "S",
+			"specialAttack": "F",
+			"block": "Space",
+			"recruit": "Q",
+			"start": "Return"
+		}
+	],
+	"playerTwoInputConfigs" : [
+		{
+			"up": "O",
+			"down": "L",
+			"left": "K",
+			"right": "Semicolon",
+			"jump": "G",
+			"quickAttack": "U",
+			"heavyAttack": "I",
+			"specialAttack": "H",
+			"block": "J",
+			"recruit": "Y",
+			"start": "P"
+		}
+	],
+	"forceXInput" : false
+}

@@ -1,0 +1,13 @@
+0,MoveHorizontal
+1,MoveVertical
+2,Jump
+3,QuickAttack
+4,HeavyAttack
+5,SpecialAttack
+6,Block
+7,Recruit
+8,GripChange
+9,Start
+10,Taunt
+11,FaceAccept
+12,FaceBack
