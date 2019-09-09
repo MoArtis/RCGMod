@@ -12,7 +12,7 @@ This mod allows multiple small things to improve the user experience for PC user
 
 - Change the keyboard mapping from the config file.
 
-- Force the game to use Xinput to potentially fix the bug when the two players are controlled by one controller. (Untested)(Optional)
+- Force the game to use Xinput to potentially fix the controller related bugs. (Optional)
 
 
 ** How to install **
@@ -37,6 +37,8 @@ Following the order of the file, this is what you can modify:
 - "interactActionId" : Can be set to any "action id" like "block" or "recruit" (full list just below). It will replace the button use for interacting with doors or grab objects on the floor. The game is using the "QuickAttack" by default which can be annoying when fighting next to a door or a weapon.
 
 - "playerOneInputConfigs" & "playerTwoInputConfigs" : Each line can be set to a keyboard keycode (full list just below). Remap each action to a new keyboard key.
+
+- "forceXInput" : Can be set to true or false. If true, it might fix some controller related bugs like controlling the two players with only one controller or the controller's inputs being not detected at all.
 
 
 ** How to uninstall **

@@ -12,7 +12,7 @@ This mod allows multiple small things to improve the user experience for PC user
 
 - Change the keyboard mapping from the config file.
 
-- Force the game to use Xinput to potentially fix the bug when the two players are controlled by one controller. (Untested)(Optional)
+- Force the game to use Xinput to potentially fix the controller related bugs. (Optional)
 
 
 ## ** How to install **
