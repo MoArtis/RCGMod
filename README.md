@@ -38,6 +38,8 @@ Following the order of the file, this is what you can modify:
 
 - "playerOneInputConfigs" & "playerTwoInputConfigs" : Each line can be set to a keyboard keycode (full list just below). Remap each action to a new keyboard key.
 
+- "forceXInput" : Can be set to true or false. If true, it might fix some controller related bugs like controlling the two players with only one controller or the controller's inputs being not detected at all.
+
 
 ## ** How to uninstall **
 
