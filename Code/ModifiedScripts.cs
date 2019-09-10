@@ -1,7 +1,16 @@
-// ** PlayerInput.cs - Update Method - Line 201 **
+// ** PlayerInput.cs - Update Method - Lines 193 to 202 **
 private void Update()
 {
-    base.InteractQuick = _rewiredPlayer.GetButtonDown(Mod.UserXpMod.interactActionId);
+	//if (!InInteractRange)
+	//{
+	base.Quick = _rewiredPlayer.GetButtonDown("QuickAttack");
+	//base.InteractQuick = false;
+	//}
+	//else
+	//{
+	//base.Quick = false;
+	base.InteractQuick = _rewiredPlayer.GetButtonDown(Mod.UserXpMod.interactActionId);
+	//}
 }
 
 // ** UI_ScreenIntro.cs **
