@@ -1,6 +1,49 @@
-// ** PlayerInput.cs - Update Method - Lines 193 to 202 **
+// ** PlayerInput.cs **
+protected override void Start()
+{
+	interactActionId = Mod.UserXpMod.interactActionId;
+	switch(interactActionId)
+	{
+		case "QuickAttack":
+			prevInteractCombatInputSet = x => { Quick = x; };
+			break;
+		case "HeavyAttack":
+			prevInteractCombatInputSet = x => { Heavy = x; };
+			break;
+		case "SpecialAttack":
+			prevInteractCombatInputSet = x => { Special = x; };
+			break;
+		case "Block":
+			prevInteractCombatInputSet = null;
+			break;
+		case "Recruit":
+			prevInteractCombatInputSet = x => { Recruit = x; };
+			break;
+		case "Jump":
+			prevInteractCombatInputSet = x => { Jump = x; };
+			break;
+	}
+	
+	//Truncated code
+}
+
+
 private void Update()
 {
+	//Added local function
+	void HandleInteractAction(System.Action<bool> combatInputSet)
+	{
+		if(!InInteractRange)
+		{
+			base.InteractQuick = false;
+		}
+		else
+		{
+			combatInputSet(false);
+		}
+	}
+	
+	//Lines 193 to 202
 	//if (!InInteractRange)
 	//{
 	base.Quick = _rewiredPlayer.GetButtonDown("QuickAttack");
@@ -9,8 +52,11 @@ private void Update()
 	//else
 	//{
 	//base.Quick = false;
-	base.InteractQuick = _rewiredPlayer.GetButtonDown(Mod.UserXpMod.interactActionId);
+	base.InteractQuick = _rewiredPlayer.GetButtonDown(interactActionId);
 	//}
+	
+	//Line 278
+	HandleInteractAction(prevInteractCombatInputSet);
 }
 
 // ** UI_ScreenIntro.cs **
