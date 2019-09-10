@@ -2,7 +2,7 @@
 
 ## ** What is it **
 
-This mod allows multiple small things to improve the user experience for PC users of the game.
+This mod changes multiple small things to improve the user experience of the game.
 
 - Skip the legal splashscreen, logos, and the intro by just pressing the "Escape" key once.
 
