@@ -8,7 +8,7 @@ This mod changes multiple small things to improve the user experience of the gam
 
 - Start the game from the main menu. (Optional)
 
-- Remap the "interaction" action used to pick object on the floor or use doors.
+- Remap the "interact" action used to pick object on the floor or use doors.
 
 - Change the keyboard mapping from the config file.
 
