@@ -14,6 +14,10 @@ This mod changes multiple small things to improve the user experience of the gam
 
 - Force the game to use Xinput to potentially fix the controller related bugs. (Optional)
 
+- Fix a bug that prevented the Book items to work properly when using a character other than Misako.
+
+- Fix a bug that prevented the phone interface to display a maxed out Stamina stat.
+
 
 ## ** How to install **
 

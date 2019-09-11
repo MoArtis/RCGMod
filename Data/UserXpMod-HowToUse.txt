@@ -16,7 +16,7 @@ This mod allows multiple small things to improve the user experience for PC user
 
 - Fix a bug that prevented the Book items to work properly when using a character other than Misako.
 
-- Fix a bug that prevented the phone interface to display a maxxed out Stamina stat.
+- Fix a bug that prevented the phone interface to display a maxed out Stamina stat.
 
 
 ** How to install **
