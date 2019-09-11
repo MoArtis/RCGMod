@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -17,6 +17,8 @@ namespace Mod
         public InputConfig[] playerOneInputConfigs;
         public InputConfig[] playerTwoInputConfigs;
         public bool forceXInput;
+        public bool fixBooksBug;
+        public bool fixMaxStaminaBug;
     }
 
     [System.Serializable]
@@ -83,6 +85,10 @@ namespace Mod
         public static bool allowSkipSplashScreens { get { LoadModData(); return data.allowSkipSplashScreens; } }
 
         public static string interactActionId { get { LoadModData(); return data.interactActionId; } }
+
+        public static bool fixBooksBug { get { LoadModData(); return data.fixBooksBug; } }
+
+        public static bool fixMaxStaminaBug { get { LoadModData(); return data.fixMaxStaminaBug; } }
 
         private static void LoadModData()
         {
