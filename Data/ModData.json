@@ -1,7 +1,7 @@
 {
 	"allowSkipSplashScreens" : true,
 	"startFromMainMenu" : false,
-	"interactActionId" : "recruit",
+	"interactActionId" : "Recruit",
 	"playerOneInputConfigs" : [
 		{
 			"up": "UpArrow",
@@ -32,5 +32,7 @@
 			"start": "P"
 		}
 	],
-	"forceXInput" : false
+	"forceXInput" : false,
+	"fixBooksBug" : true,
+	"fixMaxStaminaBug" : true
 }

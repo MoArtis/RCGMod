@@ -1,8 +1,8 @@
-~** River City Girls UserXpMod 1.01 **~
+~** River City Girls UserXpMod 1.02 **~
 
 ** What is it **
 
-This mod changes multiple small things to improve the user experience of the game.
+This mod allows multiple small things to improve the user experience for PC users of the game.
 
 - Skip the legal splashscreen, logos, and the intro by just pressing the "Escape" key once.
 
@@ -12,7 +12,11 @@ This mod changes multiple small things to improve the user experience of the gam
 
 - Change the keyboard mapping from the config file.
 
-- Force the game to use Xinput to potentially fix the controller related bugs. (Optional)
+- Force the game to use XInput to potentially fix the controller related bugs. (Optional)
+
+- Fix a bug that prevented the Book items to work properly when using a character other than Misako.
+
+- Fix a bug that prevented the phone interface to display a maxxed out Stamina stat.
 
 
 ** How to install **
