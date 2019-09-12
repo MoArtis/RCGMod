@@ -65,20 +65,6 @@ Start
 
 ** Available keyboard keycode **
 
-MoveHorizontal
-MoveVertical
-Jump
-QuickAttack
-HeavyAttack
-SpecialAttack
-Block
-Recruit
-GripChange
-Start
-Taunt
-FaceAccept
-FaceBack
-None
 Backspace
 Tab
 Clear
