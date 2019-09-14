@@ -9,16 +9,47 @@ using System.Linq;
 namespace Mod
 {
     [System.Serializable]
-    public class ModData
+    public struct ModData
     {
-        public bool allowSkipSplashScreens;
+        public bool allowQuickSkip;
         public bool startFromMainMenu;
+
         public string interactActionId;
         public InputConfig[] playerOneInputConfigs;
         public InputConfig[] playerTwoInputConfigs;
         public bool forceXInput;
+        public bool usePS4buttonPrompts;
+        public bool displayProgressionInfo;
+
+        public int vSyncCount;
+        public int targetFramerate;
+        public bool useCustomFramelimiter;
+
+        public bool displayDamageOnHit;
+        public Color xpGetTextColor;
+        public int xpGetTextFontSize;
+        public Color hitDmgTextColor;
+        public int hitDmgTextFontSizeMin;
+        public int hitDmgTextFontSizeMax;
+
+        public bool noTutorialInNewGamePlus;
+
+        public bool unlockSecretCharactersOnceForAllSave;
+
         public bool fixBooksBug;
         public bool fixMaxStaminaBug;
+
+        public InputConfig GetInputConfig(int playerId)
+        {
+            if (playerId == 0)
+            {
+                return playerOneInputConfigs[0];
+            }
+            else
+            {
+                return playerTwoInputConfigs[0];
+            }
+        }
     }
 
     [System.Serializable]
@@ -78,24 +109,41 @@ namespace Mod
 
         private static string kbMapXmlTemplate = "<?xml version =\"1.0\" encoding=\"utf-16\"?><KeyboardMap dataVersion=\"2\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://guavaman.com/rewired http://guavaman.com/schemas/rewired/1.1/KeyboardMap.xsd\" xmlns=\"http://guavaman.com/rewired\"><sourceMapId>{26}</sourceMapId><categoryId>{27}</categoryId><layoutId>0</layoutId><name></name><hardwareGuid>00000000-0000-0000-0000-000000000000</hardwareGuid><enabled>true</enabled><buttonMaps><ActionElementMap><actionCategoryId>0</actionCategoryId><actionId>1</actionId><elementType>1</elementType><elementIdentifierId>{0}</elementIdentifierId><axisRange>0</axisRange><invert>false</invert><axisContribution>0</axisContribution><keyboardKeyCode>{13}</keyboardKeyCode><modifierKey1>0</modifierKey1><modifierKey2>0</modifierKey2><modifierKey3>0</modifierKey3><enabled>true</enabled></ActionElementMap><ActionElementMap><actionCategoryId>0</actionCategoryId><actionId>1</actionId><elementType>1</elementType><elementIdentifierId>{1}</elementIdentifierId><axisRange>0</axisRange><invert>false</invert><axisContribution>1</axisContribution><keyboardKeyCode>{14}</keyboardKeyCode><modifierKey1>0</modifierKey1><modifierKey2>0</modifierKey2><modifierKey3>0</modifierKey3><enabled>true</enabled></ActionElementMap><ActionElementMap><actionCategoryId>0</actionCategoryId><actionId>0</actionId><elementType>1</elementType><elementIdentifierId>{2}</elementIdentifierId><axisRange>0</axisRange><invert>false</invert><axisContribution>1</axisContribution><keyboardKeyCode>{15}</keyboardKeyCode><modifierKey1>0</modifierKey1><modifierKey2>0</modifierKey2><modifierKey3>0</modifierKey3><enabled>true</enabled></ActionElementMap><ActionElementMap><actionCategoryId>0</actionCategoryId><actionId>0</actionId><elementType>1</elementType><elementIdentifierId>{3}</elementIdentifierId><axisRange>0</axisRange><invert>false</invert><axisContribution>0</axisContribution><keyboardKeyCode>{16}</keyboardKeyCode><modifierKey1>0</modifierKey1><modifierKey2>0</modifierKey2><modifierKey3>0</modifierKey3><enabled>true</enabled></ActionElementMap><ActionElementMap><actionCategoryId>0</actionCategoryId><actionId>9</actionId><elementType>1</elementType><elementIdentifierId>{4}</elementIdentifierId><axisRange>0</axisRange><invert>false</invert><axisContribution>0</axisContribution><keyboardKeyCode>{17}</keyboardKeyCode><modifierKey1>0</modifierKey1><modifierKey2>0</modifierKey2><modifierKey3>0</modifierKey3><enabled>true</enabled></ActionElementMap><ActionElementMap><actionCategoryId>0</actionCategoryId><actionId>3</actionId><elementType>1</elementType><elementIdentifierId>{5}</elementIdentifierId><axisRange>0</axisRange><invert>false</invert><axisContribution>0</axisContribution><keyboardKeyCode>{18}</keyboardKeyCode><modifierKey1>0</modifierKey1><modifierKey2>0</modifierKey2><modifierKey3>0</modifierKey3><enabled>true</enabled></ActionElementMap><ActionElementMap><actionCategoryId>0</actionCategoryId><actionId>4</actionId><elementType>1</elementType><elementIdentifierId>{6}</elementIdentifierId><axisRange>0</axisRange><invert>false</invert><axisContribution>0</axisContribution><keyboardKeyCode>{19}</keyboardKeyCode><modifierKey1>0</modifierKey1><modifierKey2>0</modifierKey2><modifierKey3>0</modifierKey3><enabled>true</enabled></ActionElementMap><ActionElementMap><actionCategoryId>0</actionCategoryId><actionId>2</actionId><elementType>1</elementType><elementIdentifierId>{7}</elementIdentifierId><axisRange>0</axisRange><invert>false</invert><axisContribution>0</axisContribution><keyboardKeyCode>{20}</keyboardKeyCode><modifierKey1>0</modifierKey1><modifierKey2>0</modifierKey2><modifierKey3>0</modifierKey3><enabled>true</enabled></ActionElementMap><ActionElementMap><actionCategoryId>0</actionCategoryId><actionId>5</actionId><elementType>1</elementType><elementIdentifierId>{8}</elementIdentifierId><axisRange>0</axisRange><invert>false</invert><axisContribution>0</axisContribution><keyboardKeyCode>{21}</keyboardKeyCode><modifierKey1>0</modifierKey1><modifierKey2>0</modifierKey2><modifierKey3>0</modifierKey3><enabled>true</enabled></ActionElementMap><ActionElementMap><actionCategoryId>0</actionCategoryId><actionId>6</actionId><elementType>1</elementType><elementIdentifierId>{9}</elementIdentifierId><axisRange>0</axisRange><invert>false</invert><axisContribution>0</axisContribution><keyboardKeyCode>{22}</keyboardKeyCode><modifierKey1>0</modifierKey1><modifierKey2>0</modifierKey2><modifierKey3>0</modifierKey3><enabled>true</enabled></ActionElementMap><ActionElementMap><actionCategoryId>0</actionCategoryId><actionId>7</actionId><elementType>1</elementType><elementIdentifierId>{10}</elementIdentifierId><axisRange>0</axisRange><invert>false</invert><axisContribution>0</axisContribution><keyboardKeyCode>{23}</keyboardKeyCode><modifierKey1>0</modifierKey1><modifierKey2>0</modifierKey2><modifierKey3>0</modifierKey3><enabled>true</enabled></ActionElementMap><ActionElementMap><actionCategoryId>0</actionCategoryId><actionId>11</actionId><elementType>1</elementType><elementIdentifierId>{11}</elementIdentifierId><axisRange>0</axisRange><invert>false</invert><axisContribution>0</axisContribution><keyboardKeyCode>{24}</keyboardKeyCode><modifierKey1>0</modifierKey1><modifierKey2>0</modifierKey2><modifierKey3>0</modifierKey3><enabled>true</enabled></ActionElementMap><ActionElementMap><actionCategoryId>0</actionCategoryId><actionId>12</actionId><elementType>1</elementType><elementIdentifierId>{12}</elementIdentifierId><axisRange>0</axisRange><invert>false</invert><axisContribution>0</axisContribution><keyboardKeyCode>{25}</keyboardKeyCode><modifierKey1>0</modifierKey1><modifierKey2>0</modifierKey2><modifierKey3>0</modifierKey3><enabled>true</enabled></ActionElementMap></buttonMaps></KeyboardMap>";
 
-        private static ModData data = null;
+        public static ModData data { get { LoadModData(); return _data; } set { _data = value; } }
+        private static ModData _data;
 
-        public static bool startFromMainMenu { get { LoadModData(); return data.startFromMainMenu; } }
-
-        public static bool allowSkipSplashScreens { get { LoadModData(); return data.allowSkipSplashScreens; } }
-
-        public static string interactActionId { get { LoadModData(); return data.interactActionId; } }
-
-        public static bool fixBooksBug { get { LoadModData(); return data.fixBooksBug; } }
-
-        public static bool fixMaxStaminaBug { get { LoadModData(); return data.fixMaxStaminaBug; } }
+        public static bool hasData = false;
 
         private static void LoadModData()
         {
-            if (data == null)
+            if (hasData == false)
             {
                 string modDataJson = File.ReadAllText(".\\ModData.json");
                 data = JsonUtility.FromJson<ModData>(modDataJson);
+
+                if (data.interactActionId == "")
+                    _data.interactActionId = "QuickAttack";
+
+                hasData = true;
+            }
+        }
+
+        public static void ApplyFramerateConfig()
+        {
+            LoadModData();
+
+            if (hasData == false)
+                return;
+
+            if (data.useCustomFramelimiter)
+            {
+                Application.targetFrameRate = -1;
+                QualitySettings.vSyncCount = 0;
+            }
+            else
+            {
+                Application.targetFrameRate = data.targetFramerate;
+                QualitySettings.vSyncCount = data.vSyncCount;
             }
         }
 
@@ -103,23 +151,22 @@ namespace Mod
         {
             LoadModData();
 
+            if (hasData == false)
+                return;
+
             if (data.forceXInput)
             {
                 ReInput.configuration.windowsStandalonePrimaryInputSource = Rewired.Platforms.WindowsStandalonePrimaryInputSource.XInput;
             }
 
-            ReplacePlayerMaps(0, data);
-            ReplacePlayerMaps(1, data);
-
-            //File.WriteAllText(".\\config.txt", string.Concat(
-            //    ReInput.configuration.windowsStandalonePrimaryInputSource, "\n",
-            //    ReInput.configuration.disableNativeInput, "\n",
-            //    ReInput.configuration.useXInput, "\n"
-            //    ));
+            ReplacePlayerMaps(0);
+            ReplacePlayerMaps(1);
         }
 
-        private static void ReplacePlayerMaps(int playerId, ModData inputData)
+        private static void ReplacePlayerMaps(int playerId)
         {
+            InputConfig inputConfig = data.GetInputConfig(playerId);
+
             Player.ControllerHelper.MapHelper mapHelper = ReInput.players.GetPlayer(playerId).controllers.maps;
 
             //Clear previous maps
@@ -133,13 +180,13 @@ namespace Mod
                 if (playerId == 0)
                 {
                     args.AddRange(playerOneElementIdentifierIds);
-                    args.AddRange(inputData.playerOneInputConfigs[0].ToKeycodeArray());
                 }
                 else
                 {
                     args.AddRange(playerTwoElementIdentifierIds);
-                    args.AddRange(inputData.playerTwoInputConfigs[0].ToKeycodeArray());
                 }
+
+                args.AddRange(inputConfig.ToKeycodeArray());
 
                 args.Add(playerId + 1);
                 args.Add(playerId + 1);
@@ -152,9 +199,64 @@ namespace Mod
             {
                 File.WriteAllText(string.Format(".\\Player{0}-Remap-ERROR.txt", playerId), string.Concat(e.Message, "\n", e.StackTrace));
             }
+        }
 
-            //Controller map
-            //???
+        private static Dictionary<string, PromptType> actionIdToPromptTypes = new Dictionary<string, PromptType>()
+        {
+            { "Jump", PromptType.A },
+            { "QuickAttack", PromptType.X },
+            { "HeavyAttack", PromptType.Y },
+            { "SpecialAttack", PromptType.B },
+            { "Block", PromptType.RTrigger },
+            { "Recruit", PromptType.LTrigger },
+            { "Start", PromptType.Start },
+        };
+
+        public static PromptType ActionIdToPromptType(string actionId)
+        {
+            if (actionIdToPromptTypes.ContainsKey(actionId))
+                return actionIdToPromptTypes[actionId];
+            else
+                return PromptType.X;
+        }
+
+        private static long lastTime = HighResolutionTime.Time;
+
+        public static void FrameLimiterUpdate()
+        {
+            if (hasData == false || data.useCustomFramelimiter == false || data.targetFramerate <= 0.0) return;
+
+            lastTime += TimeSpan.FromSeconds(1.0 / data.targetFramerate).Ticks;
+
+            var now = HighResolutionTime.Time;
+
+            if (now >= lastTime)
+            {
+                lastTime = now;
+                return;
+            }
+            else
+            {
+                //System.Threading.SpinWait.SpinUntil(() => { return (HighResolutionTime.Time >= lastTime); });
+                while (HighResolutionTime.Time < lastTime) { }
+            }
+        }
+
+        public static bool IsKunioAndRikkiUnlockedOnAnySaveSlot()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                List<PersistentData.EventSystemDataValue> eventValues = SaveManager_Main.LoadOrGetDefaultObject($"Slot_{i}_saveKeySlotFinishedEvents", new List<PersistentData.EventSystemDataValue>(), "savefile");
+                for (int j = 0; j < eventValues.Count; j++)
+                {
+                    if (eventValues[j].EventName == "Kill Final")
+                    {
+                        if (eventValues[j].TimesFired >= 1)
+                            return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 

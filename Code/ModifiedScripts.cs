@@ -1,3 +1,8 @@
+
+IMPORTANT : 
+This file is not up to date. Most of the 1.1 changes are missing. 
+I need manually retrack them down as I want to put as little WF's code as possible in there.
+
 // ** PlayerInput.cs **
 protected override void Start()
 {
@@ -71,11 +76,12 @@ protected void Awake()
 
 protected void Update()
 {
-    if ((Input.GetKeyDown(KeyCode.Escape) || Singleton<GlobalInput>.instance.ButtonDown(GlobalInput.Buttons.Start)) && (!AreAllVideosPlayed || !AreAllLegalScreensPlayed) && _AllowOnePressStartSkip)
-    {
-        SkipAllMovies = true;
-        OnPressSkip();
-    }
+	//if ((Input.GetKeyDown(KeyCode.Escape) || Singleton<GlobalInput>.instance.ButtonDown(GlobalInput.Buttons.Start)) && (!AreAllVideosPlayed || !AreAllLegalScreensPlayed) && _AllowOnePressStartSkip)
+	if (AlreadyDoneDidThat && (Input.GetKeyDown(KeyCode.Escape) || Singleton<GlobalInput>.instance.ButtonDown(GlobalInput.Buttons.Start, GlobalInput.ControllerId.One)) && _AllowOnePressStartSkip)
+	{
+		SkipAllMovies = true;
+		OnPressSkip();
+	}
 }
 
 //New coroutine to avoid some UI bugs when all the intro are skipped on start
@@ -117,4 +123,13 @@ protected void SetStats()
     //Add this just after the line 135
     if (_characterStats[i].StatToWatch == PlayerAttributeEnum.Stamina && Mod.UserXpMod.fixMaxStaminaBug)
         maxStatLevel = 39;
+}
+
+// ** CinematicManager.cs **
+private void Update()
+{
+	if (Mod.UserXpMod.data.allowQuickSkip && (Input.GetKeyDown(KeyCode.Escape) || Singleton<GlobalInput>.instance.ButtonDown(GlobalInput.Buttons.Start, GlobalInput.ControllerId.One)))
+	{
+		OnCinematicSkip();
+	}
 }

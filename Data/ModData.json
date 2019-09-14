@@ -1,5 +1,5 @@
 {
-	"allowSkipSplashScreens" : true,
+	"allowQuickSkip" : true,
 	"startFromMainMenu" : false,
 	"interactActionId" : "Recruit",
 	"playerOneInputConfigs" : [
@@ -33,6 +33,19 @@
 		}
 	],
 	"forceXInput" : false,
+	"usePS4buttonPrompts" : false,
+	"displayProgressionInfo" : false,
+	"vSyncCount" : 1,
+	"targetFramerate" : -1,
+	"useCustomFramelimiter" : false,
+	"displayDamageOnHit" : true,
+	"xpGetTextColor" : { "r":1,"g":0.8470589,"b":0.4117647,"a":1},
+	"xpGetTextFontSize" : 85,
+	"hitDmgTextColor" : {"r":1,"g":1,"b":1,"a":0},
+	"hitDmgTextFontSizeMin" : 80,
+	"hitDmgTextFontSizeMax" : 125,
+	"noTutorialInNewGamePlus" : true,
+	"unlockSecretCharactersOnceForAllSave" : true,
 	"fixBooksBug" : true,
 	"fixMaxStaminaBug" : true
 }
