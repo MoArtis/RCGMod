@@ -258,6 +258,28 @@ namespace Mod
             }
             return false;
         }
+
+        public static string GetProgressionInfo(Data_FileSelect data_FileSelect)
+        {
+            if (data.displayProgressionInfo == false)
+                return string.Empty;
+
+            StringBuilder sb = new StringBuilder();
+                //sb .AppendLine( string.Format("Completion rate: {0}", data_FileSelect.GetTotalCompletionRatio().ToString("p2")));
+                int num;
+                int num2;
+                sb .AppendLine( string.Format("Completed Quests:\t  {0} {1}/{2}", data_FileSelect.GetQuestCompletion(out num, out num2).ToString("p2"), num, num2));
+                sb .AppendLine( string.Format("Defeated Bosses:\t  {0} {1}/{2}", data_FileSelect.GetBossCompletion(out num, out num2).ToString("p2"), num, num2));
+                sb .AppendLine( string.Format("visited Areas:\t  {0} {1}/{2}", data_FileSelect.GetMapCompletion(out num, out num2).ToString("p2"), num, num2));
+                sb .AppendLine( string.Format("Seen Items:\t\t  {0} {1}/{2}", data_FileSelect.GetUsableCompletion(out num, out num2).ToString("p2"), num, num2));
+                sb .AppendLine( string.Format("Unlocked Moves:\t  {0} {1}/{2}", data_FileSelect.GetAttackMoveCompletion(out num, out num2).ToString("p2"), num, num2));
+                sb .AppendLine( string.Format("Unlocked Equips:\t  {0} {1}/{2}", data_FileSelect.GetEquipCompletion(out num, out num2).ToString("p2"), num, num2));
+                sb .AppendLine( string.Format("Busted Statues:\t  {0} {1}/{2}", data_FileSelect.GetStatueCompletion(out num, out num2).ToString("p2"), num, num2));
+                sb .AppendLine( string.Format("Recruits Found:\t  {0} {1}/{2}", data_FileSelect.GetRecruitCompletion(out num, out num2).ToString("p2"), num, num2));
+                sb .AppendLine( string.Format("Game beaten:\t  {0}", EventManager.instance.GetHasBeatenGameTimes() > 0 ? "YES" : "NO"));
+                sb .AppendLine( string.Format("NewGame+ started:  {0}", PersistentData.Instance.IsNewGamePlus ? "YES" : "NO"));
+            return sb.ToString();
+        }
     }
 
 }

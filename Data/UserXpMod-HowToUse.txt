@@ -2,11 +2,12 @@
 
 ** What is it **
 
-This mod allows multiple small things to improve the user experience on PC.
+UserXpMod is a "quality of life" mod for the beat 'em-up game River City Girls by Wayforward.
+It allows to tweak multiple small things to fix some issues and improve the user experience on PC.
 
 [Menus]
 - Skip any splash screen, video, dialog with just pressing Start or Escape once.
-- Start the game from the main menu. (Optional)
+- Start the game from the main menu. (Off by default)
 - [NEW] Display progression details in the save selection menu. (Off by default)
 - [NEW] Skip the tutorial in New Game Plus.
 

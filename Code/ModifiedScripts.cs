@@ -133,3 +133,11 @@ private void Update()
 		OnCinematicSkip();
 	}
 }
+
+// ** UI_FileSelectOption.cs **
+public void SetToCurrentFile()
+{
+	//Truncated code
+	//Replace the last line by this one
+	_debugInfoText.text = Mod.UserXpMod.data.displayProgressionInfo ? Mod.UserXpMod.GetProgressionInfo(_completionData) : GetDebugInfo();
+}
