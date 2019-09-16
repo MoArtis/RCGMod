@@ -33,6 +33,11 @@ It allows to tweak multiple small things to fix some issues and improve the user
 - Fix a bug that prevented the Book items to work properly when using a character other than Misako.
 - Fix a bug that prevented the phone interface to display a maxed-out Stamina stat.
 
+![vlcsnap-2019-09-16-13h12m18s096](https://user-images.githubusercontent.com/3904610/64936528-0b1bc800-d889-11e9-8c78-314270f8122d.png)
+![vlcsnap-2019-09-16-13h18m14s991](https://user-images.githubusercontent.com/3904610/64936529-0bb45e80-d889-11e9-9ae9-1ba104d763cb.png)
+![vlcsnap-2019-09-16-13h21m47s169](https://user-images.githubusercontent.com/3904610/64936530-0c4cf500-d889-11e9-80fd-8ef22bd9d525.png)
+![vlcsnap-2019-09-16-13h23m04s481](https://user-images.githubusercontent.com/3904610/64936532-0ce58b80-d889-11e9-9509-5e791f3440a7.png)
+
 
 ## ** How to install **
 
