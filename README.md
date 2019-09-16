@@ -1,5 +1,9 @@
 # River City Girls UserXpMod
 
+## ** DOWNLOAD **
+
+### https://github.com/MoArtis/RCGMod/releases
+
 ## ** What is it **
 
 UserXpMod is a "quality of life" mod for the beat 'em-up game **River City Girls** by **Wayforward**.
@@ -13,12 +17,12 @@ It allows to tweak multiple small things to fix some issues and improve the user
 
 [Settings]
 - Remap the "interact" action used to pick object on the floor or use doors.
-- [NEW] Remapping the ìinteractî action will change the button prompt accordingly.  
-- Remap the keyboard from the modís config file.
+- [NEW] Remapping the ‚Äúinteract‚Äù action will change the button prompt accordingly.  
+- Remap the keyboard from the mod‚Äôs config file.
 - Force the game to use XInput to potentially fix the controller related bugs. (Off by default)
-- [NEW] Display the PS4 controllerís button prompts instead of the Xbox ones. (Off by default)
+- [NEW] Display the PS4 controller‚Äôs button prompts instead of the Xbox ones. (Off by default)
 - [NEW] Configure the vSync settings.
-- [NEW] Use Unityís frame limiter ("TargetFramerate") or a custom one. (Off by default)
+- [NEW] Use Unity‚Äôs frame limiter ("TargetFramerate") or a custom one. (Off by default)
 
 [Gameplay/Feedbacks]
 - [NEW] Unlock the secret characters on every save once they are unlocked on at least one save.
@@ -55,25 +59,25 @@ Following the order of the file, this is what you can modify:
 
 - "forceXInput": Can be set to true or false. If true, it might fix some controller related bugs like controlling the two players with only one controller or the controller's inputs being not detected at all.
 
-- "usePS4buttonPrompts": Can be set to true or false. If true, it will replace the Xbox controllerís input prompts by the PS4 controllerís ones.
+- "usePS4buttonPrompts": Can be set to true or false. If true, it will replace the Xbox controller‚Äôs input prompts by the PS4 controller‚Äôs ones.
 
 - "displayProgressionInfo": Can be set to true or false. If true, it will display a detailed breakdown of the currently selected save in the save selection menu.
 
-- "vSyncCount": Can be set to 0, 1, 2, 3 or 4. 0 will deactivate the vertical sync and decouple the gameís framerate to the monitor refresh rate. Doing so will usually cause ìscreen tearingî but will allow to use frame limiters (see below). 1, the game default, will sync the framerate with the monitorís refresh rate. Using 144hz monitor will make the game target a framerate of 144. As the number is the ratio between the monitor refresh rate and the framerate, 2 will make the game target a framerate of 72 (for the same 144hz monitor). Most user needs to keep that value to 1.
+- "vSyncCount": Can be set to 0, 1, 2, 3 or 4. 0 will deactivate the vertical sync and decouple the game‚Äôs framerate to the monitor refresh rate. Doing so will usually cause ‚Äúscreen tearing‚Äù but will allow to use frame limiters (see below). 1, the game default, will sync the framerate with the monitor‚Äôs refresh rate. Using 144hz monitor will make the game target a framerate of 144. As the number is the ratio between the monitor refresh rate and the framerate, 2 will make the game target a framerate of 72 (for the same 144hz monitor). Most user needs to keep that value to 1.
 
-- "targetFramerate": Can be set to -1 or any positive integer. This setting is ignored if the vSync is activated (vSync sets 1,2,3 or 4). If set to -1, the game will run as fast as possible (This will kill your battery very fast). Anything above 0 will use Unityís built-in frame limiter to limit the framerate to the indicated value. Expect screen tearing when the camera is moving around in game.
+- "targetFramerate": Can be set to -1 or any positive integer. This setting is ignored if the vSync is activated (vSync sets 1,2,3 or 4). If set to -1, the game will run as fast as possible (This will kill your battery very fast). Anything above 0 will use Unity‚Äôs built-in frame limiter to limit the framerate to the indicated value. Expect screen tearing when the camera is moving around in game.
 
-- "useCustomFramelimiter": Can be set to true or false. If true, the game will use a custom Frame limiter to do the same thing as described just before in the "targetFramerate" section. It might give better results than the built-in one. Donít forget to set the targetFramerate before using this.
+- "useCustomFramelimiter": Can be set to true or false. If true, the game will use a custom Frame limiter to do the same thing as described just before in the "targetFramerate" section. It might give better results than the built-in one. Don‚Äôt forget to set the targetFramerate before using this.
 
-- "displayDamageOnHit": Can be set to true or false. If true, the amount of damage will be displayed when the enemies or the player characters are hit. An exclamation mark will be added to the damage indicator when the ìBomb Braî effect (One hit KO) is being applied.
+- "displayDamageOnHit": Can be set to true or false. If true, the amount of damage will be displayed when the enemies or the player characters are hit. An exclamation mark will be added to the damage indicator when the ‚ÄúBomb Bra‚Äù effect (One hit KO) is being applied.
 
-- "xpGetTextColor": Can be set to any real number between 0 and 1 for the Red, blue, green and alpha channels of the desired color. It corresponds to the desired color of the xp gain feedback displayed when an enemy is defeated. The alpha value (ìaî) is ignored but setting it to 0 will pick the gameís default feedback text color.
+- "xpGetTextColor": Can be set to any real number between 0 and 1 for the Red, blue, green and alpha channels of the desired color. It corresponds to the desired color of the xp gain feedback displayed when an enemy is defeated. The alpha value (‚Äúa‚Äù) is ignored but setting it to 0 will pick the game‚Äôs default feedback text color.
 
-- "xpGetTextFontSize": Can be set to any positive integer. It defines the font size of the xp gain feedback. The gameís default is 80. Setting it to 0 or less will pick the default value.
+- "xpGetTextFontSize": Can be set to any positive integer. It defines the font size of the xp gain feedback. The game‚Äôs default is 80. Setting it to 0 or less will pick the default value.
 
 - "hitDmgTextColor": Can be set to any real number between 0 and 1 for the Red, blue, green and alpha channels of the desired color. The same usage as "xpGetTextColor" but for the Hit damage feedback.
 
-- "hitDmgTextFontSizeMin": Can be set to any positive integer. As the size of the Hit damage feedback is actually dynamic, a minimum and a maximum size can be set. For the players, the size depends on the amount of base damage compared to all the other move of the playerís character. For the enemies, the size is determined from the portion of health lost from their attacks.
+- "hitDmgTextFontSizeMin": Can be set to any positive integer. As the size of the Hit damage feedback is actually dynamic, a minimum and a maximum size can be set. For the players, the size depends on the amount of base damage compared to all the other move of the player‚Äôs character. For the enemies, the size is determined from the portion of health lost from their attacks.
 
 - "hitDmgTextFontSizeMax": Can be set to any positive integer. See "hitDmgTextFontSizeMin".
 
