@@ -1,0 +1,666 @@
+diff --git a/ButtonPromptText.cs b/ButtonPromptText.cs
+index eb26824..85cadc5 100644
+--- a/ButtonPromptText.cs
++++ b/ButtonPromptText.cs
+@@ -40,8 +40,8 @@ public class ButtonPromptText : ScriptableObject
+ 	public TMP_SpriteAsset GetPlatformSpriteAsset()
+ 	{
+ 		TMP_SpriteAsset tMP_SpriteAsset = null;
+-		return _defaultSpriteAsset;
+-	}
++        return Mod.UserXpMod.Instance.data.usePS4buttonPrompts ? _ps4SpriteAsset : _defaultSpriteAsset;
++    }
+ 
+ 	public string GetPromptKey(PromptType _input)
+ 	{
+diff --git a/CinematicManager.cs b/CinematicManager.cs
+index 956891b..905bef4 100644
+--- a/CinematicManager.cs
++++ b/CinematicManager.cs
+@@ -36,7 +36,15 @@ public class CinematicManager : MonoBehaviour
+ 
+ 	private const string MovieAudioBank = "movies";
+ 
+-	public Cinematic currentCinematic
++    private void Update()
++    {
++        if (Mod.UserXpMod.Instance.IsUsingQuickSkip())
++        {
++            OnCinematicSkip();
++        }
++    }
++
++    public Cinematic currentCinematic
+ 	{
+ 		get
+ 		{
+diff --git a/CombatEntity.cs b/CombatEntity.cs
+index e18d1df..2bf581d 100644
+--- a/CombatEntity.cs
++++ b/CombatEntity.cs
+@@ -1933,6 +1933,7 @@ public abstract class CombatEntity : Entity, IDamageable, IAttacking, IDebuggabl
+ 		{
+ 			DisplayTextAbove(string.Format("{0}({1}) HP:{2}\nStun = {3} / {4}", Mathf.CeilToInt(num3), inBaseDamage, Stamina, refStunAmount, Stun.CurrentStun.ToString("0")), false);
+ 		}
++        Mod.UserXpMod.Instance.DisplayHitDamage(this, combatEntity, damageInfo, num3);
+ 		if (damageInfo2.ForceStun)
+ 		{
+ 			Stun.ForceStun(true);
+diff --git a/DamageText.cs b/DamageText.cs
+index 1d663d9..aeb85b3 100644
+--- a/DamageText.cs
++++ b/DamageText.cs
+@@ -25,4 +25,26 @@ public class DamageText : MonoBehaviour
+ 	{
+ 		_textMesh.text = text;
+ 	}
++
++    public void SetSize(int size)
++    {
++        _textMesh.fontSize = size;
++    }
++
++    public void SetColor(Color color)
++    {
++        _customColor = color;
++    }
++
++    private Color _customColor;
++
++    private void LateUpdate()
++    {
++        if (_customColor.a <= 0)
++            return;
++
++        Color color = _customColor;
++        color.a = _textMesh.color.a;
++        _textMesh.color = color;
++    }
+ }
+diff --git a/Door.cs b/Door.cs
+index 2b09b08..0de8192 100644
+--- a/Door.cs
++++ b/Door.cs
+@@ -136,7 +136,8 @@ public class Door : InteractEntity
+ 		if ((bool)_promptText)
+ 		{
+ 			_promptText.spriteAsset = _buttonPrompt.GetPlatformSpriteAsset();
+-			_promptText.text = ((!CanEnter) ? string.Empty : _buttonPrompt.GetPromptKey(PromptType.X));
++            PromptType interactionPromptType = Mod.UserXpMod.Instance.ActionIdToPromptType(Mod.UserXpMod.Instance.data.interactActionId);
++            _promptText.text = ((!CanEnter) ? string.Empty : _buttonPrompt.GetPromptKey(interactionPromptType));
+ 		}
+ 	}
+diff --git a/PlayerGlobalInventory.cs b/PlayerGlobalInventory.cs
+index 3d880f8..243d2cc 100644
+--- a/PlayerGlobalInventory.cs
++++ b/PlayerGlobalInventory.cs
+@@ -271,7 +271,7 @@ public class PlayerGlobalInventory : MonoBehaviour, IAssetable
+ 
+ 	public void ReceiveMoniesAll(QuestSuperTypes _type, float _amount)
+ 	{
+-		int num = (EventManager.instance.GetHasBeatenGameTimes() <= 0) ? 2 : 4;
++		int num = (Mod.UserXpMod.Instance.GetHasBeatenGameTimesAnyChar() <= 0) ? 2 : 4;
+ 		for (int i = 0; i < num; i++)
+ 		{
+ 			if (_type == QuestSuperTypes.Optional)
+diff --git a/PlayerInput.cs b/PlayerInput.cs
+index 80d442c..b5b5afe 100644
+--- a/PlayerInput.cs
++++ b/PlayerInput.cs
+@@ -157,9 +157,35 @@ public class PlayerInput : CombatInput
+ 		base.Jump = false;
+ 	}
+ 
+-	protected override void Start()
++    private string interactActionId = "";
++    private System.Action<bool> prevInteractCombatInputSet;
++
++    protected override void Start()
+ 	{
+-		base.Start();
++        interactActionId = Mod.UserXpMod.Instance.data.interactActionId;
++        switch (interactActionId)
++        {
++            case "QuickAttack":
++                prevInteractCombatInputSet = x => { Quick = x; };
++                break;
++            case "HeavyAttack":
++                prevInteractCombatInputSet = x => { Heavy = x; };
++                break;
++            case "SpecialAttack":
++                prevInteractCombatInputSet = x => { Special = x; };
++                break;
++            case "Block":
++                prevInteractCombatInputSet = null;
++                break;
++            case "Recruit":
++                prevInteractCombatInputSet = x => { Recruit = x; };
++                break;
++            case "Jump":
++                prevInteractCombatInputSet = x => { Jump = x; };
++                break;
++        }
++
++        base.Start();
+ 		_rewiredPlayer = ReInput.players.GetPlayer(_playerId);
+ 		_sceneTransitioner = LoadRequiredAssets.GetLoadedComponent<UI_SceneTransitioner>();
+ 		if (_sceneTransitioner != null)
+@@ -202,16 +228,16 @@ public class PlayerInput : CombatInput
+ 			base.VerticalDir = ((Mathf.Abs(_rewiredPlayer.GetAxis("MoveVertical")) > 0.3f) ? ((int)Mathf.Sign(_rewiredPlayer.GetAxis("MoveVertical"))) : 0);
+ 			base.Jump = _rewiredPlayer.GetButtonDown("Jump");
+ 			base.JumpRelease = _rewiredPlayer.GetButtonUp("Jump");
+-			if (!InInteractRange)
+-			{
++			//if (!InInteractRange)
++			//{
+ 				base.Quick = _rewiredPlayer.GetButtonDown("QuickAttack");
+-				base.InteractQuick = false;
+-			}
+-			else
+-			{
+-				base.Quick = false;
+-				base.InteractQuick = _rewiredPlayer.GetButtonDown("QuickAttack");
+-			}
++				//base.InteractQuick = false;
++			//}
++			//else
++			//{
++				//base.Quick = false;
++				base.InteractQuick = _rewiredPlayer.GetButtonDown(interactActionId);
++			//}
+ 			base.Heavy = _rewiredPlayer.GetButtonDown("HeavyAttack");
+ 			base.Special = _rewiredPlayer.GetButtonDown("SpecialAttack");
+ 			if (base.LockStandardButtonPress)
+@@ -247,7 +273,17 @@ public class PlayerInput : CombatInput
+ 			{
+ 				base.StartInput = _rewiredPlayer.GetButton("Start");
+ 			}
+-			StopAllStandardButtonInput();
++
++            if (!InInteractRange)
++            {
++                base.InteractQuick = false;
++            }
++            else
++            {
++                prevInteractCombatInputSet(false);
++            }
++
++            StopAllStandardButtonInput();
+ 		}
+ 		else if (GameState.CurrentState != GameStates.Tutorial)
+ 		{
+diff --git a/RCG/DeathRespawnManager.cs b/RCG/DeathRespawnManager.cs
+index 8cfe20b..ac0bf28 100644
+--- a/RCG/DeathRespawnManager.cs
++++ b/RCG/DeathRespawnManager.cs
+@@ -115,7 +115,7 @@ namespace RCG
+ 				}
+ 				RCGAudio.instance.PlayOneShot(_playerJoinAudioEvent);
+ 			}
+-			else if (EventManager.instance.GetHasBeatenGameTimes() >= 1)
++			else if (Mod.UserXpMod.Instance.GetHasBeatenGameTimesAnyChar() >= 1)
+ 			{
+ 				Singleton<PlayerDeathManager>.instance.SetPlayerCharacterSelecting(inPlayerID, true);
+ 				UI_HUDManager.Instance.UpdatePlayerHUD();
+diff --git a/RCG/EnemyEnitity.cs b/RCG/EnemyEnitity.cs
+index bbbc031..f58b928 100644
+--- a/RCG/EnemyEnitity.cs
++++ b/RCG/EnemyEnitity.cs
+@@ -708,7 +708,8 @@ namespace RCG
+ 				Animator.Play(text2);
+ 				RefreshAnimator();
+ 			}
+-			SetActStat();
++            Mod.UserXpMod.Instance.ApplyModifiersOnEnemy(this);
++            SetActStat();
+ 			DelayAnimationStart();
+ 		}
+ 
+@@ -731,7 +732,8 @@ namespace RCG
+ 			base.Update();
+ 			if (!(this is NPCEntity))
+ 			{
+-				if (base.PickupObject != null)
++                Mod.UserXpMod.Instance.UpdateAiSetting(this);
++                if (base.PickupObject != null)
+ 				{
+ 					TimeSinceLastPickup += Time.deltaTime;
+ 				}
+@@ -1394,8 +1396,10 @@ namespace RCG
+ 
+ 		public void ShowExpEarn()
+ 		{
+-			DisplayTextAbove(string.Format("EXP: {0}", EXPToGive));
+-		}
++            //DisplayTextAbove(string.Format("EXP: {0}", EXPToGive));
++            Mod.UserXpMod userXpMod = Mod.UserXpMod.Instance;
++            userXpMod.DisplayCustomTextAbove(this, string.Format("EXP: {0}", EXPToGive), true, userXpMod.data.xpGetTextColor, userXpMod.data.xpGetTextFontSize);
++        }
+ 
+ 		private void SpawnCoin()
+ 		{
+@@ -2467,5 +2471,15 @@ namespace RCG
+ 				bFailSafe_bounce = false;
+ 			}
+ 		}
+-	}
++
++        public override bool CanDie()
++        {
++            if (Mod.UserXpMod.Instance.AreEnemiesInvicible)
++            {
++                base.Stamina = StartingStamina;
++                return false;
++            }
++            return base.CanDie();
++        }
++    }
+ }
+diff --git a/RCG/InteractEntity.cs b/RCG/InteractEntity.cs
+index 7e2ab59..7fd6fbb 100644
+--- a/RCG/InteractEntity.cs
++++ b/RCG/InteractEntity.cs
+@@ -191,8 +191,9 @@ namespace RCG
+ 			if ((bool)_promptText && (bool)_buttonPrompt)
+ 			{
+ 				_promptText.spriteAsset = _buttonPrompt.GetPlatformSpriteAsset();
+-				_promptText.text = _buttonPrompt.GetPromptKey(PromptType.X);
+-			}
++                PromptType interactionPromptType = Mod.UserXpMod.Instance.ActionIdToPromptType(Mod.UserXpMod.Instance.data.interactActionId);
++                _promptText.text = _buttonPrompt.GetPromptKey(interactionPromptType);
++            }
+ 		}
+ 
+ 		public virtual void ToggleInteractSymbol(int _player, bool _enabled)
+@@ -200,8 +201,9 @@ namespace RCG
+ 			if ((bool)_promptText && (bool)_buttonPrompt)
+ 			{
+ 				_promptText.spriteAsset = _buttonPrompt.GetPlatformSpriteAsset();
+-				_promptText.text = _buttonPrompt.GetPromptKey(PromptType.X);
+-			}
++                PromptType interactionPromptType = Mod.UserXpMod.Instance.ActionIdToPromptType(Mod.UserXpMod.Instance.data.interactActionId);
++                _promptText.text = _buttonPrompt.GetPromptKey(interactionPromptType);
++            }
+ 			_showInteractSymbol = _enabled;
+ 			if (_autoInteract && _enabled)
+ 			{
+diff --git a/RCG/PlayerAttributes.cs b/RCG/PlayerAttributes.cs
+index c9b1023..90d4857 100644
+--- a/RCG/PlayerAttributes.cs
++++ b/RCG/PlayerAttributes.cs
+@@ -386,7 +386,7 @@ namespace RCG
+ 
+ 		public void GainXPAll(int _exp)
+ 		{
+-			int num = (EventManager.instance.GetHasBeatenGameTimes() <= 0) ? 2 : 4;
++			int num = (Mod.UserXpMod.Instance.GetHasBeatenGameTimesAnyChar() <= 0) ? 2 : 4;
+ 			for (int i = 0; i < num; i++)
+ 			{
+ 				GainXP((PlayerCharacters)i, _exp);
+diff --git a/RCG/PlayerUseableEffectManager.cs b/RCG/PlayerUseableEffectManager.cs
+index 98cc2ba..3a54dc0 100644
+--- a/RCG/PlayerUseableEffectManager.cs
++++ b/RCG/PlayerUseableEffectManager.cs
+@@ -40,8 +40,9 @@ namespace RCG
+ 
+ 		public bool IsInEffectHeld(int inPlayerID, UseableHeldEffect inEffect)
+ 		{
+-			return PlayerGlobalInventory.instance.PlayerInventories[inPlayerID].UseablesInventory.Items.Exists((Data_Item o) => o is Data_InventoryItem && (o as Data_InventoryItem).HeldEffect == inEffect);
+-		}
++            int id = Mod.UserXpMod.Instance.data.fixBooksBug ? (int)PlayerManager.Instance.Players[inPlayerID].ClassNameToPlayerCharacter : inPlayerID;
++            return PlayerGlobalInventory.instance.PlayerInventories[id].UseablesInventory.Items.Exists((Data_Item o) => o is Data_InventoryItem && (o as Data_InventoryItem).HeldEffect == inEffect);
++        }
+ 
+ 		public bool IsInEffectSpecial(PlayerCharacters inPlayerID, UseableSpecialEffect inEffect)
+ 		{
+diff --git a/TutorialTrigger.cs b/TutorialTrigger.cs
+index 0d2a510..d70ccb2 100644
+--- a/TutorialTrigger.cs
++++ b/TutorialTrigger.cs
+@@ -80,6 +80,9 @@ public class TutorialTrigger : MonoBehaviour
+ 
+ 	public void ShowTutorial(float _delayAmount)
+ 	{
++        if (PersistentData.Instance.IsNewGamePlus && Mod.UserXpMod.Instance.data.noTutorialInNewGamePlus)
++            return;
++
+ 		StartCoroutine(CoShowTutorial(_delayAmount));
+ 	}
+ 
+diff --git a/UI_Confirm.cs b/UI_Confirm.cs
+index 49d476b..69c00e6 100644
+--- a/UI_Confirm.cs
++++ b/UI_Confirm.cs
+@@ -5,10 +5,10 @@ public class UI_Confirm : MonoBehaviour
+ 	public UI_ConfirmOption StartOption;
+ 
+ 	[SerializeField]
+-	protected UI_ConfirmOption _yesOption;
++	public UI_ConfirmOption _yesOption;
+ 
+ 	[SerializeField]
+-	protected UI_ConfirmOption _noOption;
++	public UI_ConfirmOption _noOption;
+ 
+ 	protected UI_ConfirmOption _lastOption;
+ 
+diff --git a/UI_FileSelectOption.cs b/UI_FileSelectOption.cs
+index 247acd1..08d0e5f 100644
+--- a/UI_FileSelectOption.cs
++++ b/UI_FileSelectOption.cs
+@@ -60,7 +60,7 @@ public class UI_FileSelectOption : MonoBehaviour
+ 		int currentFileSlot = PersistentData.Instance.CurrentFileSlot;
+ 		string sceneName = SaveScene = PersistentData.Instance.SaveScene;
+ 		_completionData.ApplySceneInfo(sceneName, ref _previewImage, ref _mainAreaText, ref _subAreaText);
+-		bool hasBeatenGame = EventManager.instance != null && EventManager.instance.GetHasBeatenGameTimes() >= 1;
++		bool hasBeatenGame = EventManager.instance != null && Mod.UserXpMod.Instance.GetHasBeatenGameTimesAnyChar() >= 1;
+ 		for (int i = 0; i < _characterLevels.Length; i++)
+ 		{
+ 			_characterLevels[i].UpdateCharacter(hasBeatenGame);
+@@ -98,7 +98,12 @@ public class UI_FileSelectOption : MonoBehaviour
+ 	private string GetDebugInfo()
+ 	{
+ 		string text = string.Empty;
+-		if ((bool)EventManager.instance && UI_ScreenFileSelect.ShowDebugInfo)
++
++        text = Mod.UserXpMod.Instance.GetProgressionInfo(_completionData);
++        if (text != string.Empty)
++            return text;
++
++        if ((bool)EventManager.instance && UI_ScreenFileSelect.ShowDebugInfo)
+ 		{
+ 			text += string.Format("Total Complete: {0}\n", _completionData.GetTotalCompletionRatio());
+ 			int _complete;
+diff --git a/UI_ItemPickup.cs b/UI_ItemPickup.cs
+index 3f1d079..7eec634 100644
+--- a/UI_ItemPickup.cs
++++ b/UI_ItemPickup.cs
+@@ -260,15 +260,15 @@ public class UI_ItemPickup : MonoBehaviour
+ 		{
+ 			giveToAll4Players = true;
+ 		}
+-		else if (_sentQuest != null && _sentQuest.RewardItem != null && EventManager.instance.GetHasBeatenGameTimes() == 1 && _sentQuest.RewardItem.ItemNameEnglish.ToLower().Contains("hasebe"))
++		else if (_sentQuest != null && _sentQuest.RewardItem != null && Mod.UserXpMod.Instance.GetHasBeatenGameTimesAnyChar() == 1 && _sentQuest.RewardItem.ItemNameEnglish.ToLower().Contains("hasebe"))
+ 		{
+ 			giveToAll4Players = false;
+ 		}
+-		else if (EventManager.instance.GetHasBeatenGameTimes() >= 1)
++		else if (Mod.UserXpMod.Instance.GetHasBeatenGameTimesAnyChar() >= 1)
+ 		{
+ 			giveToAll4Players = true;
+ 		}
+-		else if (EventManager.instance.GetHasBeatenGameTimes() == 0)
++		else if (Mod.UserXpMod.Instance.GetHasBeatenGameTimesAnyChar() == 0)
+ 		{
+ 			giveToAll4Players = false;
+ 		}
+@@ -285,7 +285,7 @@ public class UI_ItemPickup : MonoBehaviour
+ 					PlayerGlobalInventory.instance.ReceiveItemAllternate(_sentQuest.RewardItem, 2);
+ 				}
+ 			}
+-			if (EventManager.instance.GetHasBeatenGameTimes() >= 1)
++			if (Mod.UserXpMod.Instance.GetHasBeatenGameTimesAnyChar() >= 1)
+ 			{
+ 				if (_sentQuest != null && _sentQuest.RewardItem != null && _sentQuest.RewardItem.ItemNameEnglish.ToLower().Contains("hasebe"))
+ 				{
+diff --git a/UI_PhoneManager.cs b/UI_PhoneManager.cs
+index 492b8e8..8cda37e 100644
+--- a/UI_PhoneManager.cs
++++ b/UI_PhoneManager.cs
+@@ -304,7 +304,9 @@ public class UI_PhoneManager : MonoBehaviour
+ 		CanOpenPhones = true;
+ 		_open = false;
+ 		_currentlyAnimatingPhone = false;
+-	}
++
++        Mod.UserXpMod.Instance.dojoMovesItemPrefab = ((UI_PhoneScreen_Moves)_phones[0].ScreenManager._screens[2])._movesItemPrefab;
++    }
+ 
+ 	protected void Start()
+ 	{
+diff --git a/UI_PhoneScreen_CharacterV2.cs b/UI_PhoneScreen_CharacterV2.cs
+index 1b8838a..cb3f75b 100644
+--- a/UI_PhoneScreen_CharacterV2.cs
++++ b/UI_PhoneScreen_CharacterV2.cs
+@@ -133,7 +133,11 @@ public class UI_PhoneScreen_CharacterV2 : UI_MenuScreen_Phone
+ 			{
+ 				int statLevel = instance.GetStatLevel(_characterStats[i].StatToWatch, (int)PlayerManager.Instance.Players[_playerID].ClassNameToPlayerCharacter);
+ 				int maxStatLevel = instance.GetMaxStatLevel(_characterStats[i].StatToWatch, PlayerManager.Instance.Players[_playerID].ClassNameToPlayerCharacter);
+-				_characterStats[i].StatMeter.SetStatValue(statLevel);
++
++                if (Mod.UserXpMod.Instance.data.fixMaxStaminaBug && _characterStats[i].StatToWatch == PlayerAttributeEnum.Stamina)
++                    maxStatLevel = 39;
++
++                _characterStats[i].StatMeter.SetStatValue(statLevel);
+ 				_characterStats[i].StatMeter.SetValue((float)statLevel / (float)maxStatLevel);
+ 				_characterStats[i].SetStatMeterColor();
+ 			}
+diff --git a/UI_PhoneScreen_Moves.cs b/UI_PhoneScreen_Moves.cs
+index 8053a06..51c127d 100644
+--- a/UI_PhoneScreen_Moves.cs
++++ b/UI_PhoneScreen_Moves.cs
+@@ -11,7 +11,7 @@ public class UI_PhoneScreen_Moves : UI_MenuScreen_Phone
+ 
+ 	[BoxGroup("Moves References")]
+ 	[SerializeField]
+-	private UI_MovesItemDisplay _movesItemPrefab;
++	public UI_MovesItemDisplay _movesItemPrefab;
+ 
+ 	[BoxGroup("Moves References")]
+ 	[SerializeField]
+diff --git a/UI_PortraitDialogSystem.cs b/UI_PortraitDialogSystem.cs
+index 99179df..fffbfe9 100644
+--- a/UI_PortraitDialogSystem.cs
++++ b/UI_PortraitDialogSystem.cs
+@@ -309,6 +309,9 @@ public class UI_PortraitDialogSystem : MonoBehaviour
+ 		_fadeTimer = Mathf.Clamp(_fadeTimer, 0f, _fadeTime);
+ 		if (_playingCinematic)
+ 		{
++            if (Mod.UserXpMod.Instance.IsUsingQuickSkip())
++                FullSkip();
++
+ 			_fadeTimer += Time.unscaledDeltaTime;
+ 			float t = _fadeTimer / _fadeTime;
+ 			_backgroundFadeImage.color = Color.Lerp(Color.clear, _targetFadeColor, t);
+diff --git a/UI_ScreenCharacterSelect.cs b/UI_ScreenCharacterSelect.cs
+index eb6e9b6..618c362 100644
+--- a/UI_ScreenCharacterSelect.cs
++++ b/UI_ScreenCharacterSelect.cs
+@@ -54,7 +54,7 @@ public class UI_ScreenCharacterSelect : UI_MenuScreen
+ 		{
+ 			_selectedCharacterByPlayer[i] = -1;
+ 		}
+-		bool flag = EventManager.instance != null && EventManager.instance.GetHasBeatenGameTimes() >= 1;
++		bool flag = EventManager.instance != null && Mod.UserXpMod.Instance.GetHasBeatenGameTimesAnyChar() >= 1;
+ 		UI_InputSelectable uI_InputSelectable = null;
+ 		for (int j = 0; j < _selectables.Count; j++)
+ 		{
+@@ -94,7 +94,10 @@ public class UI_ScreenCharacterSelect : UI_MenuScreen
+ 				}
+ 			}
+ 		}
+-		bool flag3 = GlobalSettings.instance != null && !GlobalSettings.instance.SinglePlayer;
++
++        _startSelectable = Mod.UserXpMod.Instance.GetStartingCharacterSelectable(_startSelectable, _selectables, ref _hoveredCharacterByPlayer);
++
++        bool flag3 = GlobalSettings.instance != null && !GlobalSettings.instance.SinglePlayer;
+ 		for (int l = 0; l < _characterDisplays.Length; l++)
+ 		{
+ 			UI_CharacterSelectOption uI_CharacterSelectOption = _characterDisplays[l];
+diff --git a/UI_ScreenCredits.cs b/UI_ScreenCredits.cs
+index 71e3b86..54ab954 100644
+--- a/UI_ScreenCredits.cs
++++ b/UI_ScreenCredits.cs
+@@ -336,7 +336,7 @@ public class UI_ScreenCredits : UI_MenuScreen
+ 			break;
+ 		}
+ 		case CreditsState.Rewarding:
+-			if (EventManager.instance.GetHasBeatenGameTimes() > 1)
++			if (Mod.UserXpMod.Instance.GetHasBeatenGameTimesAnyChar() > 1)
+ 			{
+ 				ExitCredits(0);
+ 			}
+diff --git a/UI_ScreenFileSelect.cs b/UI_ScreenFileSelect.cs
+index 04afc13..db2d009 100644
+--- a/UI_ScreenFileSelect.cs
++++ b/UI_ScreenFileSelect.cs
+@@ -292,6 +292,7 @@ public class UI_ScreenFileSelect : UI_MenuScreen
+ 		SetCurrentFileSlot(_file);
+ 		if (PersistentData.Instance.ShowNewGameOptions)
+ 		{
++            Mod.UserXpMod.Instance.ModifyNgpDefaultOption(_confirmNewGame);
+ 			_currentConfirm = _confirmNewGame;
+ 			_confirmNewGame.gameObject.SetActive(true);
+ 			_confirmNewGame.SetHoveredOption(_player, _confirmNewGame.StartOption);
+diff --git a/UI_ScreenGameSelect.cs b/UI_ScreenGameSelect.cs
+index 140beb8..0bec910 100644
+--- a/UI_ScreenGameSelect.cs
++++ b/UI_ScreenGameSelect.cs
+@@ -18,7 +18,14 @@ public class UI_ScreenGameSelect : UI_MenuScreen
+ 	[SerializeField]
+ 	private UI_InputSelectable _nextButton;
+ 
+-	public void OnPressOptions(int _player)
++    protected override void OnEnable()
++    {
++        base.OnEnable();
++        if(Mod.UserXpMod.Instance.data.startSelectedByDefault)
++            _inputSystem.SetPlayerSelectable(0, _selectables[_selectables.Count - 1], true);
++    }
++
++    public void OnPressOptions(int _player)
+ 	{
+ 		string text = "Options";
+ 		_screenManager.GotoScreen(text);
+diff --git a/UI_ScreenIntro.cs b/UI_ScreenIntro.cs
+index b06c454..7a52eb7 100644
+--- a/UI_ScreenIntro.cs
++++ b/UI_ScreenIntro.cs
+@@ -132,15 +132,23 @@ public class UI_ScreenIntro : UI_MenuScreen
+ 	{
+ 		OnItemChange(false);
+ 	}
+-
+-	public void OnItemChange(bool _skipResetMusic = false)
++    public IEnumerator SkipAllMoviesCoroutine()
++    {
++        _StartScreenFadeTime = 0.5f;
++        yield return new WaitForSeconds(0.6f);
++        OnItemChange(false);
++    }
++
++    public void OnItemChange(bool _skipResetMusic = false)
+ 	{
+ 		if (SkipAllMovies)
+ 		{
+ 			m_CurrentLegalScreenIndex = _allLegalScreenRoots.Length;
+-			m_CurrentVideoIndex = _allVideoClips.Length - 1;
++			m_CurrentVideoIndex = _allVideoClips.Length;
+ 			SkipAllMovies = false;
+-		}
++            StartCoroutine(SkipAllMoviesCoroutine());
++            return;
++        }
+ 		if (!AreAllLegalScreensPlayed)
+ 		{
+ 			ShowNextLegalScreenDelay();
+@@ -251,7 +259,15 @@ public class UI_ScreenIntro : UI_MenuScreen
+ 
+ 	public void TransitionToNextScreen(bool _forceSkipped)
+ 	{
+-		_videoPlayer.Stop();
++        if (Mod.UserXpMod.Instance.data.skipStartMenu)
++        {
++            _nextScreen = "FileSelect";
++            _StartScreenFadeTime = 0.1f;
++            _inputSystem.SetPlayerSelectable(0, _screenManager.GetNextScreen(_nextScreen).StartSelectable, true);
++            //_forceSkipped = true;
++            MusicManager.instance.StopLevelMusic();
++        }
++        _videoPlayer.Stop();
+ 		if (_forceSkipped)
+ 		{
+ 			(_screenManager.GetNextScreen(_nextScreen) as UI_ScreenStart).SkipResetMusic = true;
+@@ -283,6 +299,9 @@ public class UI_ScreenIntro : UI_MenuScreen
+ 		BlackFaderCallbackEvents.OnFadeInComplete = (Action)Delegate.Combine(BlackFaderCallbackEvents.OnFadeInComplete, new Action(OnItemChange));
+ 		_legalScreenAnimator.ResetTrigger("Fade_Out");
+ 		_legalScreenAnimator.ResetTrigger("Fade_In");
++
++        _SkipCanvas.SetActive(Mod.UserXpMod.Instance.data.allowQuickSkip);
++        SkipAllMovies = Mod.UserXpMod.Instance.data.startFromStartMenu;
+ 	}
+ 
+ 	protected override void OnEnable()
+@@ -345,6 +364,12 @@ public class UI_ScreenIntro : UI_MenuScreen
+ 		{
+ 			OnPressSkip();
+ 		}
++
++        if(Mod.UserXpMod.Instance.IsUsingQuickSkip())
++        {
++            SkipAllMovies = true;
++            OnPressSkip();
++        }
+ 	}
+ 
+ 	protected override void OnDestroy()
+diff --git a/UI_ScreenManager.cs b/UI_ScreenManager.cs
+index 6440b4a..d2642e2 100644
+--- a/UI_ScreenManager.cs
++++ b/UI_ScreenManager.cs
+@@ -30,7 +30,7 @@ public class UI_ScreenManager : MonoBehaviour
+ 
+ 	[ReorderableList]
+ 	[SerializeField]
+-	private UI_MenuScreen[] _screens;
++	public UI_MenuScreen[] _screens;
+ 
+ 	private Stack<UI_MenuScreen> _screenQueue;
+ 
+diff --git a/UI_StoreItemDisplayV2.cs b/UI_StoreItemDisplayV2.cs
+index b7403d8..caaa384 100644
+--- a/UI_StoreItemDisplayV2.cs
++++ b/UI_StoreItemDisplayV2.cs
+@@ -280,7 +280,8 @@ public class UI_StoreItemDisplayV2 : MonoBehaviour
+ 		{
+ 			_itemDescription.text = Singleton<Localizer>.instance.GetTranslatedKey(_item.ItemDescription, FontType.KOMTITA, ref _itemDescription);
+ 		}
+-	}
++        _itemDescription.text += Mod.UserXpMod.Instance.AddStoreInfosToUsableItem(_item, this, _itemDescription.text == "???");
++    }
+ 
+ 	public void ToggleHover(bool _hovering)
+ 	{
+diff --git a/UI_Store_DojoMoveDisplay.cs b/UI_Store_DojoMoveDisplay.cs
+index b386224..b166c84 100644
+--- a/UI_Store_DojoMoveDisplay.cs
++++ b/UI_Store_DojoMoveDisplay.cs
+@@ -77,6 +77,8 @@ public class UI_Store_DojoMoveDisplay : MonoBehaviour
+ 				_currentDisplay = _moveAnimations[i];
+ 			}
+ 		}
++
++        Mod.UserXpMod.Instance.DisplayDojoMovesItem(_allMoves, _moveName, transform);
+ 	}
+ 
+ 	private void HandleMoveDisplay()
+diff --git a/UI_TutorialSlideIn.cs b/UI_TutorialSlideIn.cs
+index 6d137dd..c3802fd 100644
+--- a/UI_TutorialSlideIn.cs
++++ b/UI_TutorialSlideIn.cs
+@@ -176,7 +176,13 @@ public class UI_TutorialSlideIn : MonoBehaviour
+ 
+ 	public void Init(string _header, string _body, bool _right)
+ 	{
+-		if (_state == SlideInState.In || _state == SlideInState.Stay || _state == SlideInState.Out)
++        if (PersistentData.Instance.IsNewGamePlus && Mod.UserXpMod.Instance.data.noTutorialInNewGamePlus)
++        {
++            _forceClosed = true;
++            return;
++        }
++
++        if (_state == SlideInState.In || _state == SlideInState.Stay || _state == SlideInState.Out)
+ 		{
+ 			_nextTutorialBuffer = new TutorialMessage(_header, _body, _right);
+ 			return;

@@ -12,26 +12,41 @@ It allows to tweak multiple small things to fix some issues and improve the user
 [Menus]
 - Skip any splash screen, video, dialog with just pressing Start or Escape once.
 - Start the game from the main menu. (Off by default)
-- [NEW] Display progression details in the save selection menu. (Off by default)
-- [NEW] Skip the tutorial in New Game Plus.
+- Display progression details in the save selection menu. (Off by default)
+- Skip the tutorial in New Game Plus.
+- [NEW] Skip the "Press Start" menu.
+- [NEW] "Loiter" option highlighted by default after selecting a file.
+- [NEW] "Next" option highlighted by default in the file settings menu.
+- [NEW] Preselect a favorite character in the character selection screen. (Off by default)
+- [NEW] Useables' consumption status displayed for each character.
+- [NEW] Useables' stat gain displayed in shops.
+- [NEW] Display moves' inputs in Dojos.
 
 [Settings]
 - Remap the "interact" action used to pick object on the floor or use doors.
-- [NEW] Remapping the “interact” action will change the button prompt accordingly.  
+- Remapping the “interact” action will change the button prompt accordingly.  
 - Remap the keyboard from the mod’s config file.
 - Force the game to use XInput to potentially fix the controller related bugs. (Off by default)
-- [NEW] Display the PS4 controller’s button prompts instead of the Xbox ones. (Off by default)
-- [NEW] Configure the vSync settings.
-- [NEW] Use Unity’s frame limiter ("TargetFramerate") or a custom one. (Off by default)
+- Display the PS4 controller’s button prompts instead of the Xbox ones. (Off by default)
+- Configure the vSync settings.
+- Use Unity’s frame limiter ("TargetFramerate") or a custom one. (Off by default)
 
 [Gameplay/Feedbacks]
-- [NEW] Unlock the secret characters on every save once they are unlocked on at least one save.
-- [NEW] Display the amount of damage on hit like other River City games.
-- [NEW] Customize the color and the size of the Damage and XP gain feedbacks.
+- Unlock the secret characters on every save once they are unlocked on at least one save.
+- Display the amount of damage on hit like other River City games.
+- Customize the color and the size of the Damage and XP gain feedbacks.
 
 [Bug fixes]
 - Fix a bug that prevented the Book items to work properly when using a character other than Misako.
 - Fix a bug that prevented the phone interface to display a maxed-out Stamina stat.
+
+[Combo Training Mode]
+- [NEW] Press F1 to make enemies invincible.
+- [NEW] Press F2 to force common enemies to spawn as their Nightmare variations.
+- [NEW] Press F3 to prevent common enemies from attacking the players.
+
+[FUN]
+- [NEW] Change the size of the enemies. (Off by default)
 
 ![vlcsnap-2019-09-16-13h12m18s096](https://user-images.githubusercontent.com/3904610/64936528-0b1bc800-d889-11e9-8c78-314270f8122d.png)
 ![vlcsnap-2019-09-16-13h18m14s991](https://user-images.githubusercontent.com/3904610/64936529-0bb45e80-d889-11e9-9ae9-1ba104d763cb.png)
@@ -57,6 +72,8 @@ Following the order of the file, this is what you can modify:
 - "allowQuickSkip": Can be set to true or false. if true, allows to skip any video, dialog and the whole intro by pressing Start or Escape once.
 
 - "startFromMainMenu": Can be set to true or false. If true, always start the game from the main menu.
+
+- "skipStartMenu": Can be set to true or false. If true, always skip the "Press Start" menu (A.K.A. Title screen).
 
 - "interactActionId": Can be set to any "action id" like "block" or "recruit" (full list just below). It will replace the button use for interacting with doors or grab objects on the floor. The game is using the "QuickAttack" by default which can be annoying when fighting next to a door or a weapon.
 
@@ -86,13 +103,25 @@ Following the order of the file, this is what you can modify:
 
 - "hitDmgTextFontSizeMax": Can be set to any positive integer. See "hitDmgTextFontSizeMin".
 
+- "moreInfosInUseableShops": Can be set to true or false. If true, the shop selling foods or other useable will make it clear if a character already used an item. It will also display the items' stat gains. 
+
+- "loiterSelectedByDefault": Can be set to true or false. If true, the "loiter" option will be selected by default after selecting a file. Making it unlikely to start a new game plus by mistake and reset the story progress.
+
+- "startSelectedByDefault": Can be set to true or false. If true, the "Next" option in the selected by default in the file settings menu.
+
 - "noTutorialInNewGamePlus": Can be set to true or false. If true, remove the tutorial in New Game Plus.
+
+- "characterByDefault": Can be set to Misako, Kyoko, Kunio, Riki or left empty (""). If set to a character name, the character selection screen will try to select that character by default for the two players. If value is set to locked character, left empty or invalid, the default behavior will be used. 
 
 - "unlockSecretCharactersOnceForAllSave": Can be set to true or false. If true, unlocking the secret playable characters only need to be done once in order to make them available for any save.
 
 - "fixBooksBug": Can be set to true or false. If true, fix a bug that prevented the Book items to work properly when using a character other than Misako.
 
 - "fixMaxStaminaBug": Can be set to true or false. If true, fix a bug that prevented the phone interface to display a maxed-out Stamina stat.
+
+- "activateTrainingMode": Can be set to true or false. If true, allows to use the F1, F2 and F3 keys to make the enemies invincible, use their nightmare variation and unable to use attacks respectively.
+
+- "enemiesScalingRatio": Can be set to any real number between 0.1 and 20. Will change the size of the enemies. :D  
 
 
 ## ** How to uninstall **
