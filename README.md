@@ -31,10 +31,11 @@ It allows to tweak multiple small things to fix some issues and improve the user
 - Configure the vSync settings.
 - Use Unity’s frame limiter ("TargetFramerate") or a custom one. (Off by default)
 
-[Gameplay/Feedbacks]
+[Game mechanics/Feedbacks]
 - Unlock the secret characters on every save once they are unlocked on at least one save.
 - Display the amount of damage on hit like other River City games.
 - Customize the color and the size of the Damage and XP gain feedbacks.
+- [NEW] Make Recruits stay and fight for you when summoned. (Off by default) - Code by Muken
 
 [Bug fixes]
 - Fix a bug that prevented the Book items to work properly when using a character other than Misako.
