@@ -50,9 +50,9 @@ It allows to tweak multiple small things to fix some issues and improve the user
 - [NEW] Change the size of the enemies. (Off by default)
 
 ![vlcsnap-2019-09-16-13h12m18s096](https://user-images.githubusercontent.com/3904610/64936528-0b1bc800-d889-11e9-8c78-314270f8122d.png)
-![vlcsnap-2019-09-16-13h18m14s991](https://user-images.githubusercontent.com/3904610/64936529-0bb45e80-d889-11e9-9ae9-1ba104d763cb.png)
-![vlcsnap-2019-09-16-13h21m47s169](https://user-images.githubusercontent.com/3904610/64936530-0c4cf500-d889-11e9-80fd-8ef22bd9d525.png)
-![vlcsnap-2019-09-16-13h23m04s481](https://user-images.githubusercontent.com/3904610/64936532-0ce58b80-d889-11e9-9509-5e791f3440a7.png)
+![1049320_20190922161231_1](https://user-images.githubusercontent.com/3904610/65384687-cb0c8780-dd57-11e9-8c10-23d4860a3fc3.png)
+![1049320_20190922161454_1](https://user-images.githubusercontent.com/3904610/65384688-cba51e00-dd57-11e9-904c-8a458beda79e.png)
+![1049320_20190922163910_1](https://user-images.githubusercontent.com/3904610/65384689-cc3db480-dd57-11e9-998c-53b75cdf594c.png)
 
 
 ## ** How to install **
