@@ -51,6 +51,8 @@ namespace Mod
         public bool activateTrainingMode;
         public float enemiesScalingRatio;
 
+        public bool activeRecruits;
+
         public InputConfig GetInputConfig(int playerId)
         {
             if (playerId == 0)
