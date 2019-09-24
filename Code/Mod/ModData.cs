@@ -24,6 +24,7 @@ namespace Mod
         public bool forceXInput;
         public bool usePS4buttonPrompts;
         public bool displayProgressionInfo;
+        public bool swapControllerBlockAndRecruitButtons;
 
         public int vSyncCount;
         public int targetFramerate;
@@ -63,6 +64,11 @@ namespace Mod
             {
                 return playerTwoInputConfigs[0];
             }
+        }
+
+        public void SetInteractActionId(string actionId)
+        {
+            interactActionId = actionId;
         }
     }
 

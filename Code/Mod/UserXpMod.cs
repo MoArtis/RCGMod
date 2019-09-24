@@ -21,6 +21,7 @@ namespace Mod
                 {
                     GameObject go = new GameObject("UserXpMod");
                     s_instance = go.AddComponent<UserXpMod>();
+                    s_instance.LoadModData();
                     DontDestroyOnLoad(go);
                 }
                 return s_instance;
@@ -37,6 +38,9 @@ namespace Mod
         public bool AreEnemiesInvicible { get; private set; }
         public bool AreEnemiesNightmare { get; private set; }
         public bool AreEnemiesPacifist { get; private set; }
+
+        public bool HasUsedQuickSkip { get; private set; }
+        public bool HasSeenIntros { get; set; }
 
         private ModData _data;
 
@@ -143,9 +147,6 @@ namespace Mod
                 string modDataJson = File.ReadAllText(".\\ModData.json");
                 data = JsonUtility.FromJson<ModData>(modDataJson);
 
-                if (_data.interactActionId == "")
-                    _data.interactActionId = "QuickAttack";
-
                 hasData = true;
 
                 ApplyFramerateConfig();
@@ -182,9 +183,36 @@ namespace Mod
                 ReInput.configuration.windowsStandalonePrimaryInputSource = Rewired.Platforms.WindowsStandalonePrimaryInputSource.XInput;
             }
 
+            if (_data.interactActionId == "")
+                _data.interactActionId = "QuickAttack";
+
+            if (data.swapControllerBlockAndRecruitButtons)
+            {
+                //actionIdToPromptTypes["Block"] = PromptType.LTrigger;
+                //actionIdToPromptTypes["Recruit"] = PromptType.RTrigger;
+
+                blockInput = "Recruit";
+                recruitInput = "Block";
+
+                string block = data.playerOneInputConfigs[0].block;
+                _data.playerOneInputConfigs[0].block = data.playerOneInputConfigs[0].recruit;
+                _data.playerOneInputConfigs[0].recruit = block;
+                block = data.playerTwoInputConfigs[0].block;
+                _data.playerTwoInputConfigs[0].block = data.playerTwoInputConfigs[0].recruit;
+                _data.playerTwoInputConfigs[0].recruit = block;
+
+                if (data.interactActionId == "Block")
+                    _data.SetInteractActionId("Recruit");
+                else if (data.interactActionId == "Recruit")
+                    _data.SetInteractActionId("Block");
+            }
+
             ReplacePlayerMaps(0);
             ReplacePlayerMaps(1);
         }
+
+        public static string blockInput = "Block";
+        public static string recruitInput = "Recruit";
 
         private void ReplacePlayerMaps(int playerId)
         {
@@ -313,6 +341,8 @@ namespace Mod
         {
             if (data.allowQuickSkip == false)
                 return false;
+
+            HasUsedQuickSkip = true;
 
             return Input.GetKeyDown(KeyCode.Escape) || Singleton<GlobalInput>.instance.ButtonDown(GlobalInput.Buttons.Start, GlobalInput.ControllerId.One);
         }
