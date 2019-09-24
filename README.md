@@ -30,6 +30,7 @@ It allows to tweak multiple small things to fix some issues and improve the user
 - Display the PS4 controller’s button prompts instead of the Xbox ones. (Off by default)
 - Configure the vSync settings.
 - Use Unity’s frame limiter ("TargetFramerate") or a custom one. (Off by default)
+- [NEW] Swap the "Recruit" and "Block" buttons on the controllers. (Off by default)
 
 [Game mechanics/Feedbacks]
 - Unlock the secret characters on every save once they are unlocked on at least one save.
@@ -85,6 +86,8 @@ Following the order of the file, this is what you can modify:
 - "usePS4buttonPrompts": Can be set to true or false. If true, it will replace the Xbox controller’s input prompts by the PS4 controller’s ones.
 
 - "displayProgressionInfo": Can be set to true or false. If true, it will display a detailed breakdown of the currently selected save in the save selection menu.
+
+- "swapControllerBlockAndRecruitButtons" Can be set to true or false. If true, it will swap the "Recruit" and "Block" buttons on the controllers (LT/LB and RT/RB).
 
 - "vSyncCount": Can be set to 0, 1, 2, 3 or 4. 0 will deactivate the vertical sync and decouple the game’s framerate to the monitor refresh rate. Doing so will usually cause “screen tearing” but will allow to use frame limiters (see below). 1, the game default, will sync the framerate with the monitor’s refresh rate. Using 144hz monitor will make the game target a framerate of 144. As the number is the ratio between the monitor refresh rate and the framerate, 2 will make the game target a framerate of 72 (for the same 144hz monitor). Most user needs to keep that value to 1.
 
