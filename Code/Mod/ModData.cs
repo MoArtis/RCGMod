@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Mod
 {
@@ -52,7 +52,17 @@ namespace Mod
         public bool activateTrainingMode;
         public float enemiesScalingRatio;
 
-        public bool activeRecruits;
+        [System.Serializable]
+        public struct GameplayModifications
+        {
+            public bool activeRecruits;
+            public bool quickComboOverride;
+            public bool backAttackCombo;
+            public bool backAttackAutoParry;
+            public bool heavyAttackGuardBreak;
+        }
+
+        public GameplayModifications gameplayModifications;
 
         public InputConfig GetInputConfig(int playerId)
         {

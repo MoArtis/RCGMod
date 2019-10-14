@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -551,6 +551,146 @@ namespace Mod
             moveDisplayRt.anchorMin = new Vector2(0.5f, 0.5f);
             moveDisplayRt.anchorMax = new Vector2(0.5f, 0.5f);
             moveDisplayRt.anchoredPosition = new Vector2(-112.8f, -404.5f);
+        }
+
+        public static void AddQuickOverrideToMovesList(System.Collections.Generic.List<MoveDescription> movesList)
+        {
+            foreach (MoveDescription move in movesList)
+            {
+                ComboMove lightAttack = null;
+                foreach (ComboMove combo in move.ComboList)
+                {
+                    if (combo.Priority == 0)
+                    {
+                        foreach (ComboCondition condition in combo.Conditions)
+                        {
+                            if (condition is InputCondition)
+                            {
+                                InputCondition inputCondition = condition as InputCondition;
+                                if (inputCondition.DirectionModifier == InputDirectionModifier.None && inputCondition.ComboInputs == ComboInputs.Quick)
+                                {
+                                    lightAttack = new ComboMove();
+                                    lightAttack.MoveName = combo.MoveName;
+                                    lightAttack.ToMove = combo.ToMove;
+                                    lightAttack.Priority = 3;
+                                    lightAttack.AI_Followup = combo.AI_Followup;
+                                    lightAttack.Conditions = new System.Collections.Generic.List<ComboCondition>();
+                                    foreach (ComboCondition comboCondition in combo.Conditions)
+                                    {
+                                        if (comboCondition is InputCondition)
+                                        {
+                                            InputCondition newInputCondition = ScriptableObject.CreateInstance<InputCondition>();
+                                            newInputCondition.ComboInputs = ComboInputs.Quick;
+                                            newInputCondition.DirectionModifier = InputDirectionModifier.Up;
+                                            lightAttack.Conditions.Add(newInputCondition);
+                                        }
+                                        else
+                                        {
+                                            lightAttack.Conditions.Add(comboCondition);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (lightAttack != null)
+                    move.ComboList.Add(lightAttack);
+            }
+        }
+
+        public static void AddBackAttackComboToMovesList(System.Collections.Generic.List<MoveDescription> movesList)
+        {
+            MoveDescription backAttack = null;
+            foreach (MoveDescription move in movesList)
+            {
+                if (move.MoveName.ToLower().Contains("block") && move.ComboList.Count > 0)
+                {
+                    backAttack = move.ComboList[0].ToMove;
+                }
+            }
+
+            if (backAttack != null)
+            {
+                foreach (MoveDescription move in movesList)
+                {
+                    ComboMove backCombo = null;
+                    foreach (ComboMove combo in move.ComboList)
+                    {
+                        foreach (ComboCondition condition in combo.Conditions)
+                        {
+                            if (condition is InputCondition)
+                            {
+                                InputCondition inputCondition = condition as InputCondition;
+                                if (inputCondition.DirectionModifier == InputDirectionModifier.None && inputCondition.ComboInputs == ComboInputs.Heavy)
+                                {
+                                    backCombo = new ComboMove();
+                                    backCombo.MoveName = backAttack.MoveName;
+                                    backCombo.ToMove = backAttack;
+                                    backCombo.Priority = combo.Priority + 1;
+                                    backCombo.AI_Followup = combo.AI_Followup;
+                                    backCombo.Conditions = new System.Collections.Generic.List<ComboCondition>();
+                                    foreach (ComboCondition comboCondition in combo.Conditions)
+                                    {
+                                        if (comboCondition is InputCondition)
+                                        {
+                                            InputCondition newInputCondition = ScriptableObject.CreateInstance<InputCondition>();
+                                            newInputCondition.ComboInputs = ComboInputs.Heavy;
+                                            newInputCondition.DirectionModifier = InputDirectionModifier.Back;
+                                            backCombo.Conditions.Add(newInputCondition);
+                                        }
+                                        else
+                                        {
+                                            backCombo.Conditions.Add(comboCondition);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (backCombo != null)
+                        move.ComboList.Add(backCombo);
+                }
+            }
+        }
+
+        public static bool TryBackAttackAutoParry(RCG.Player player, CombatEntity combatEntity)
+        {
+            if (player != null)
+            {
+                string playerMoveName = player.CurrentMove.MoveName;
+                if (playerMoveName == "MisakoBruceBackhand" ||
+                    playerMoveName == "KyokoDonkeyKick" ||
+                    playerMoveName == "RikiCombingHair" ||
+                    playerMoveName == "KunioBackElbow")
+                {
+                    if ((combatEntity.transform.position.x > player.transform.position.x) != (player.Facing.FacingSign > 0))
+                    {
+                        combatEntity.Fsm.ChangeState<EnemyBlockPushedByPlayer>(100);
+                        player.Facing.SetFacingFromSign(player.Facing.FacingSign * -1);
+                        player.PlayVFX_Parry();
+                        player.ChangeState<PlayerIdle>(100);
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static void TryHeavyAttackGuardBreak(RCG.Player player, CombatEntity combatEntity)
+        {
+            if (player != null && !(combatEntity is BossBaseEntity))
+            {
+                string playerMoveName = player.CurrentMove.MoveName;
+                if (playerMoveName == "MisakoHaymaker" ||
+                    playerMoveName == "KyokoDab" ||
+                    playerMoveName == "RikiOneInchPunch" ||
+                    playerMoveName == "KunioEat")
+                {
+                    combatEntity.Fsm.ChangeState<EnemyBlockPushedByPlayer>(100);
+                    player.ChangeState<PlayerIdle>(100);
+                }
+            }
         }
     }
 }
