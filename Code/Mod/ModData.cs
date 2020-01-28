@@ -12,6 +12,19 @@ namespace Mod
     }
 
     [System.Serializable]
+    public struct GameplayModifications
+    {
+        public bool activeRecruits;
+        public bool quickComboOverride;
+        public bool backAttackCombo;
+        public bool backAttackAutoParry;
+        public bool heavyAttackGuardBreak;
+        public bool sharedRewards;
+        public bool monkMode;
+        public bool alwaysKeepWeapons;
+    }
+
+    [System.Serializable]
     public struct ModData
     {
         public bool allowQuickSkip;
@@ -19,12 +32,13 @@ namespace Mod
         public bool skipStartMenu;
 
         public string interactActionId;
+        public bool instantInteraction;
         public InputConfig[] playerOneInputConfigs;
         public InputConfig[] playerTwoInputConfigs;
         public bool forceXInput;
         public bool usePS4buttonPrompts;
         public bool displayProgressionInfo;
-        public bool swapControllerBlockAndRecruitButtons;
+        public bool swapPhoneNavigationButtons;
 
         public int vSyncCount;
         public int targetFramerate;
@@ -46,23 +60,16 @@ namespace Mod
 
         public bool unlockSecretCharactersOnceForAllSave;
 
-        public bool fixBooksBug;
         public bool fixMaxStaminaBug;
 
         public bool activateTrainingMode;
         public float enemiesScalingRatio;
 
-        [System.Serializable]
-        public struct GameplayModifications
-        {
-            public bool activeRecruits;
-            public bool quickComboOverride;
-            public bool backAttackCombo;
-            public bool backAttackAutoParry;
-            public bool heavyAttackGuardBreak;
-        }
+        public bool useJsonLocalizationData;
 
         public GameplayModifications gameplayModifications;
+
+        public LocalizationKey[] localizationKeys;
 
         public InputConfig GetInputConfig(int playerId)
         {

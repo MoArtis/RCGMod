@@ -38,6 +38,8 @@ namespace Mod
         public bool AreEnemiesInvicible { get; private set; }
         public bool AreEnemiesNightmare { get; private set; }
         public bool AreEnemiesPacifist { get; private set; }
+        public bool AreEnemiesNoAi { get; private set; }
+        public bool ArePlayersInvincible { get; private set; }
 
         public bool HasUsedQuickSkip { get; private set; }
         public bool HasSeenIntros { get; set; }
@@ -74,22 +76,49 @@ namespace Mod
             if (data.activateTrainingMode == false || GameState.CurrentState != GameStates.Playing)
                 return;
 
+            bool hasInput = false;
+
             if (Input.GetKeyDown(KeyCode.F1))
             {
                 AreEnemiesInvicible = !AreEnemiesInvicible;
                 DisplayCustomTextAbovePlayer(0, string.Format("Invicible enemies: {0}", AreEnemiesInvicible), false, AreEnemiesInvicible ? Color.green : Color.red, 120);
+                hasInput = true;
             }
 
             if (Input.GetKeyDown(KeyCode.F2))
             {
                 AreEnemiesNightmare = !AreEnemiesNightmare;
                 DisplayCustomTextAbovePlayer(0, string.Format("Nightmare enemies: {0}", AreEnemiesNightmare), false, AreEnemiesNightmare ? Color.green : Color.red, 120);
+                hasInput = true;
             }
 
             if (Input.GetKeyDown(KeyCode.F3))
             {
                 AreEnemiesPacifist = !AreEnemiesPacifist;
                 DisplayCustomTextAbovePlayer(0, string.Format("Pacifist enemies: {0}", AreEnemiesPacifist), false, AreEnemiesPacifist ? Color.green : Color.red, 120);
+                hasInput = true;
+            }
+
+            if (Input.GetKeyDown(KeyCode.F4))
+            {
+                AreEnemiesNoAi = !AreEnemiesNoAi;
+                DisplayCustomTextAbovePlayer(0, string.Format("No AI enemies: {0}", AreEnemiesNoAi), false, AreEnemiesNoAi ? Color.green : Color.red, 120);
+                hasInput = true;
+            }
+
+            if (Input.GetKeyDown(KeyCode.F5))
+            {
+                ArePlayersInvincible = !ArePlayersInvincible;
+                DisplayCustomTextAbovePlayer(0, string.Format("Invincible players: {0}", ArePlayersInvincible), false, ArePlayersInvincible ? Color.green : Color.red, 120);
+            }
+
+            if (hasInput)
+            {
+                EnemyEnitity[] enemies = FindObjectsOfType<EnemyEnitity>();
+                for (int i = 0; i < enemies.Length; i++)
+                {
+                    UpdateAiSetting(enemies[i]);
+                }
             }
         }
 
@@ -107,8 +136,11 @@ namespace Mod
             }
             if (enemy is NPCEntity == false && data.enemiesScalingRatio > 0f && data.enemiesScalingRatio != 1f)
             {
-                float scale = Mathf.Clamp(data.enemiesScalingRatio, 0.1f, 20f);
-                transform.localScale *= scale;
+                float scaleRatio = Mathf.Clamp(data.enemiesScalingRatio, 0.1f, 20f);
+                Vector3 scale = enemy.transform.localScale;
+                scale.x *= scaleRatio;
+                scale.y *= scaleRatio;
+                enemy.transform.localScale = scale;
             }
             if (data.activateTrainingMode && enemy._AISetting != null)
             {
@@ -117,6 +149,12 @@ namespace Mod
                     aiSettings.Add(enemy.ClassType, enemy._AISetting);
                 }
                 enemy._AISetting = Instantiate(enemy._AISetting);
+
+                EnemyEnitity[] enemies = FindObjectsOfType<EnemyEnitity>();
+                for (int i = 0; i < enemies.Length; i++)
+                {
+                    UpdateAiSetting(enemies[i]);
+                }
             }
         }
 
@@ -124,8 +162,12 @@ namespace Mod
 
         public void UpdateAiSetting(EnemyEnitity enemy)
         {
-            if (data.activateTrainingMode == false)
+            if (data.activateTrainingMode == false || enemy._AISetting == null || enemy is NPCEntity)
                 return;
+
+            enemy.AI_ChangeState<AI_Idle>();
+            enemy.SetAIChangeState(!AreEnemiesNoAi);
+            enemy.SetAIChangeState_CombatEntityMainManager(!AreEnemiesNoAi);
 
             enemy._AISetting.PercentageOfGetupAttack = AreEnemiesPacifist ? 0f : aiSettings[enemy.ClassType].PercentageOfGetupAttack;
             enemy._AISetting.AIAttackDetails_RunHeavyAttack.Weight = AreEnemiesPacifist ? 0f : aiSettings[enemy.ClassType].AIAttackDetails_RunHeavyAttack.Weight;
@@ -151,6 +193,7 @@ namespace Mod
 
                 ApplyFramerateConfig();
                 ApplyCustomInputConfig();
+                ApplyMonkMode();
             }
         }
 
@@ -186,33 +229,24 @@ namespace Mod
             if (_data.interactActionId == "")
                 _data.interactActionId = "QuickAttack";
 
-            if (data.swapControllerBlockAndRecruitButtons)
+            if (data.swapPhoneNavigationButtons)
             {
-                //actionIdToPromptTypes["Block"] = PromptType.LTrigger;
-                //actionIdToPromptTypes["Recruit"] = PromptType.RTrigger;
-
-                blockInput = "Recruit";
-                recruitInput = "Block";
-
-                string block = data.playerOneInputConfigs[0].block;
-                _data.playerOneInputConfigs[0].block = data.playerOneInputConfigs[0].recruit;
-                _data.playerOneInputConfigs[0].recruit = block;
-                block = data.playerTwoInputConfigs[0].block;
-                _data.playerTwoInputConfigs[0].block = data.playerTwoInputConfigs[0].recruit;
-                _data.playerTwoInputConfigs[0].recruit = block;
-
-                if (data.interactActionId == "Block")
-                    _data.SetInteractActionId("Recruit");
-                else if (data.interactActionId == "Recruit")
-                    _data.SetInteractActionId("Block");
+                blockUiInput = "Recruit";
+                recruitUiInput = "Block";
             }
 
             ReplacePlayerMaps(0);
             ReplacePlayerMaps(1);
         }
 
-        public static string blockInput = "Block";
-        public static string recruitInput = "Recruit";
+        private void ApplyMonkMode()
+        {
+            if (data.gameplayModifications.monkMode)
+                Singleton<GameplayTweaks>.instance.UnlockAllMoves = true;
+        }
+
+        public static string blockUiInput = "Block";
+        public static string recruitUiInput = "Recruit";
 
         private void ReplacePlayerMaps(int playerId)
         {
@@ -324,16 +358,28 @@ namespace Mod
             //sb .AppendLine( string.Format("Completion rate: {0}", data_FileSelect.GetTotalCompletionRatio().ToString("p2")));
             int num;
             int num2;
-            sb.AppendLine(string.Format("Completed Quests:\t  {0} {1}/{2}", data_FileSelect.GetQuestCompletion(out num, out num2).ToString("0%"), num, num2));
-            sb.AppendLine(string.Format("Defeated Bosses:\t  {0} {1}/{2}", data_FileSelect.GetBossCompletion(out num, out num2).ToString("0%"), num, num2));
-            sb.AppendLine(string.Format("visited Areas:\t  {0} {1}/{2}", data_FileSelect.GetMapCompletion(out num, out num2).ToString("0%"), num, num2));
-            sb.AppendLine(string.Format("Seen Items:\t\t  {0} {1}/{2}", data_FileSelect.GetUsableCompletion(out num, out num2).ToString("0%"), num, num2));
-            sb.AppendLine(string.Format("Unlocked Moves:\t  {0} {1}/{2}", data_FileSelect.GetAttackMoveCompletion(out num, out num2).ToString("0%"), num, num2));
-            sb.AppendLine(string.Format("Unlocked Equips:\t  {0} {1}/{2}", data_FileSelect.GetEquipCompletion(out num, out num2).ToString("0%"), num, num2));
-            sb.AppendLine(string.Format("Busted Statues:\t  {0} {1}/{2}", data_FileSelect.GetStatueCompletion(out num, out num2).ToString("0%"), num, num2));
-            sb.AppendLine(string.Format("Recruits Found:\t  {0} {1}/{2}", data_FileSelect.GetRecruitCompletion(out num, out num2).ToString("0%"), num, num2));
-            sb.AppendLine(string.Format("Game beaten:\t  {0}", EventManager.instance.GetHasBeatenGameTimes() > 0 ? "YES" : "NO"));
-            sb.AppendLine(string.Format("NewGame+ started: {0}", PersistentData.Instance.IsNewGamePlus ? "YES" : "NO"));
+            string labelYes = Singleton<Localizer>.instance.GetTranslatedKey("LBL_YES", null);
+            string labelNo = Singleton<Localizer>.instance.GetTranslatedKey("LBL_NO", null);
+            string label = Singleton<Localizer>.instance.GetTranslatedKey("LBL_COMPLETED_QUEST", null);
+            sb.AppendLine(string.Format("{0}{1} {2}/{3}", label, data_FileSelect.GetQuestCompletion(out num, out num2).ToString("0%"), num, num2));
+            label = Singleton<Localizer>.instance.GetTranslatedKey("LBL_DEFEATED_BOSSES", null);
+            sb.AppendLine(string.Format("{0}{1} {2}/{3}", label, data_FileSelect.GetBossCompletion(out num, out num2).ToString("0%"), num, num2));
+            label = Singleton<Localizer>.instance.GetTranslatedKey("LBL_VISITED_AREAS", null);
+            sb.AppendLine(string.Format("{0}{1} {2}/{3}", label, data_FileSelect.GetMapCompletion(out num, out num2).ToString("0%"), num, num2));
+            label = Singleton<Localizer>.instance.GetTranslatedKey("LBL_SEEN_ITEMS", null);
+            sb.AppendLine(string.Format("{0}{1} {2}/{3}", label, data_FileSelect.GetUsableCompletion(out num, out num2).ToString("0%"), num, num2));
+            label = Singleton<Localizer>.instance.GetTranslatedKey("LBL_UNLOCKED_MOVES", null);
+            sb.AppendLine(string.Format("{0}{1} {2}/{3}", label, data_FileSelect.GetAttackMoveCompletion(out num, out num2).ToString("0%"), num, num2));
+            label = Singleton<Localizer>.instance.GetTranslatedKey("LBL_UNLOCKED_EQUIPS", null);
+            sb.AppendLine(string.Format("{0}{1} {2}/{3}", label, data_FileSelect.GetEquipCompletion(out num, out num2).ToString("0%"), num, num2));
+            label = Singleton<Localizer>.instance.GetTranslatedKey("LBL_BUSTED_STATUES", null);
+            sb.AppendLine(string.Format("{0}{1} {2}/{3}", label, data_FileSelect.GetStatueCompletion(out num, out num2).ToString("0%"), num, num2));
+            label = Singleton<Localizer>.instance.GetTranslatedKey("LBL_RECRUITS_FOUND", null);
+            sb.AppendLine(string.Format("{0}{1} {2}/{3}", label, data_FileSelect.GetRecruitCompletion(out num, out num2).ToString("0%"), num, num2));
+            label = Singleton<Localizer>.instance.GetTranslatedKey("LBL_GAME_BEATEN", null);
+            sb.AppendLine(string.Format("{0}{1}", label, EventManager.instance.GetHasBeatenGameTimes() > 0 ? labelYes : labelNo));
+            label = Singleton<Localizer>.instance.GetTranslatedKey("LBL_NGP_STARTED", null);
+            sb.AppendLine(string.Format("{0}{1}", label, PersistentData.Instance.IsNewGamePlus ? labelYes : labelNo));
             return sb.ToString();
         }
 
@@ -347,12 +393,11 @@ namespace Mod
             return Input.GetKeyDown(KeyCode.Escape) || Singleton<GlobalInput>.instance.ButtonDown(GlobalInput.Buttons.Start, GlobalInput.ControllerId.One);
         }
 
-        public void DisplayHitDamage(CombatEntity victim, CombatEntity attacker, DamageInfo damageInfo, float dmg)
+        public void DisplayHitDamage(CombatEntity victim, CombatEntity attacker, DamageInfo damageInfo, float dmg, bool hasBombBraEffect)
         {
             if (!data.displayDamageOnHit || victim.CharacterSprite == null || dmg <= 0f)
                 return;
 
-            bool hasBombBraEffect = false;
             float ratio = 0.5f;
             if (attacker != null)
             {
@@ -360,7 +405,6 @@ namespace Mod
                 if (player != null)
                 {
                     PlayerCharacters pc = PlayerManager.Instance.Players[player.PlayerID].ClassNameToPlayerCharacter;
-                    hasBombBraEffect = RCG.PlayerEquipEffectManager.Instance.BombBraEffect(pc, victim);
                     if (hasBombBraEffect)
                     {
                         ratio = 1f;
@@ -521,23 +565,13 @@ namespace Mod
 
         private UI_MovesItemDisplay dojoMoveDisplay;
 
-        public void DisplayDojoMovesItem(Data_Item[] moves, string moveName, Transform moveDisplayTransform)
+        public void DisplayDojoMovesItem(Data_MovesItem move, Transform moveDisplayTransform)
         {
             if (data.displayMoveInputsInDojo == false)
                 return;
 
             if (dojoMoveDisplay != null)
                 Destroy(dojoMoveDisplay.gameObject);
-
-            Data_MovesItem move = null;
-            for (int i = 0; i < moves.Length; i++)
-            {
-                if (moves[i] != null && moves[i].ItemNameEnglish == moveName)
-                    move = moves[i] as Data_MovesItem;
-            }
-
-            if (move == null)
-                return;
 
             dojoMoveDisplay = Instantiate(dojoMovesItemPrefab, moveDisplayTransform, false);
             dojoMoveDisplay.GenerateInputDisplay(move.DisplayInfo.MoveIcons, move.Inputs);
@@ -690,6 +724,27 @@ namespace Mod
                     combatEntity.Fsm.ChangeState<EnemyBlockPushedByPlayer>(100);
                     player.ChangeState<PlayerIdle>(100);
                 }
+            }
+        }
+
+        public void AddModLocDataToLocDatabase(Data_LocalizationDatabase locDatabase)
+        {
+            List<LocalizationKey> locDataKeys = locDatabase.Keys;
+            for (int i = 0; i < data.localizationKeys.Length; i++)
+            {
+                bool alreadyExist = false;
+                for (int j = 0; j < locDataKeys.Count; j++)
+                {
+                    if(data.localizationKeys[i].Key == locDataKeys[j].Key)
+                    {
+                        alreadyExist = true;
+                        locDataKeys[j] = data.localizationKeys[i];
+                        break;
+                    }
+                }
+
+                if(alreadyExist == false)
+                    locDatabase.Keys.Add(data.localizationKeys[i]);
             }
         }
     }

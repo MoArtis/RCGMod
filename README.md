@@ -9,46 +9,67 @@
 UserXpMod is a "quality of life" mod for the beat 'em-up game **River City Girls** by **Wayforward**.
 It allows to tweak multiple small things to fix some issues and improve the user experience on PC.
 
+## ** What is new **
+
+- Compatible with the official patch 1.1
+- Keep the currently held weapon when entering a boss room. (Off by default)
+- Make the interaction with doors and bus stops instantaneous. (Off by default)
+- Add the two missing moves' input display in the dojo.
+- Add two new features to the training mode (No AI on enemies and players invincibility).
+- Use the JSON localization file to write your own translation.
+- Translated progression details (Only in Spanish and French for now - You can add you own in the mod's data file).
+- Various bug fixes on existing features.
+
+
+## ** What is it used for **
+
 [Menus]
 - Skip any splash screen, video, dialog with just pressing Start or Escape once.
 - Start the game from the main menu. (Off by default)
 - Display progression details in the save selection menu. (Off by default)
 - Skip the tutorial in New Game Plus.
-- [NEW] Skip the "Press Start" menu.
-- [NEW] "Loiter" option highlighted by default after selecting a file.
-- [NEW] "Next" option highlighted by default in the file settings menu.
-- [NEW] Preselect a favorite character in the character selection screen. (Off by default)
-- [NEW] Useables' consumption status displayed for each character.
-- [NEW] Useables' stat gain displayed in shops.
-- [NEW] Display moves' inputs in Dojos.
+- Skip the "Press Start" menu.
+- "Loiter" option highlighted by default after selecting a file.
+- "Next" option highlighted by default in the file settings menu.
+- Preselect a favorite character in the character selection screen. (Off by default)
+- Useables' consumption status displayed for each character.
+- Useables' stat gain displayed in shops.
+- Display moves' inputs in Dojos.
+- [NEW] Use the JSON localization file to write your own translation.
 
 [Settings]
 - Remap the "interact" action used to pick object on the floor or use doors.
-- Remapping the “interact” action will change the button prompt accordingly.  
+- Remapping the “interact” action will change the button prompt accordingly.
+- [NEW] Make the interaction with doors and bus stops instantaneous. (Off by default)  
 - Remap the keyboard from the mod’s config file.
 - Force the game to use XInput to potentially fix the controller related bugs. (Off by default)
 - Display the PS4 controller’s button prompts instead of the Xbox ones. (Off by default)
 - Configure the vSync settings.
 - Use Unity’s frame limiter ("TargetFramerate") or a custom one. (Off by default)
-- [NEW] Swap the "Recruit" and "Block" buttons on the controllers. (Off by default)
+- Swap the phone navigation buttons / keys. (Off by default)
 
 [Game mechanics/Feedbacks]
 - Unlock the secret characters on every save once they are unlocked on at least one save.
 - Display the amount of damage on hit like other River City games.
 - Customize the color and the size of the Damage and XP gain feedbacks.
-- [NEW] Make Recruits stay and fight for you when summoned. (Off by default) - Code by Muken
+- Make Recruits stay and fight for you when summoned. (Off by default) - Code by Muken
+- Share rewards between players. (Off by default) - Code by Muken
+- Customize the Attack and Combo system. (Off by default) - Code by Muken
+- [NEW] Keep the currently held weapon when entering a boss room. (Off by default)
 
 [Bug fixes]
-- Fix a bug that prevented the Book items to work properly when using a character other than Misako.
+- [DEPRECATED]Fix a bug that prevented the Book items to work properly when using a character other than Misako.
 - Fix a bug that prevented the phone interface to display a maxed-out Stamina stat.
 
 [Combo Training Mode]
-- [NEW] Press F1 to make enemies invincible.
-- [NEW] Press F2 to force common enemies to spawn as their Nightmare variations.
-- [NEW] Press F3 to prevent common enemies from attacking the players.
+- Press F1 to make enemies invincible.
+- Press F2 to force common enemies to spawn as their Nightmare variations.
+- Press F3 to prevent common enemies from attacking the players.
+- [NEW] Press F4 to deactivate enemies' AI.
+- [NEW] Press F5 to make the players invincible.
 
 [FUN]
-- [NEW] Change the size of the enemies. (Off by default)
+- Change the size of the enemies. (Off by default)
 
 ![vlcsnap-2019-09-16-13h12m18s096](https://user-images.githubusercontent.com/3904610/64936528-0b1bc800-d889-11e9-8c78-314270f8122d.png)
 ![1049320_20190922161231_1](https://user-images.githubusercontent.com/3904610/65384687-cb0c8780-dd57-11e9-8c10-23d4860a3fc3.png)
@@ -79,6 +100,8 @@ Following the order of the file, this is what you can modify:
 
 - "interactActionId": Can be set to any "action id" like "block" or "recruit" (full list just below). It will replace the button use for interacting with doors or grab objects on the floor. The game is using the "QuickAttack" by default which can be annoying when fighting next to a door or a weapon.
 
+- "instantInteraction": Can be set to true or false. If true, it will make interaction with doors and bus stop instantaneous. Like in the version 1.0 of the game.
+
 - "playerOneInputConfigs" & "playerTwoInputConfigs": Each line can be set to a keyboard keycode (full list just below). Remap each action to a new keyboard key.
 
 - "forceXInput": Can be set to true or false. If true, it might fix some controller related bugs like controlling the two players with only one controller or the controller's inputs being not detected at all.
@@ -87,7 +110,7 @@ Following the order of the file, this is what you can modify:
 
 - "displayProgressionInfo": Can be set to true or false. If true, it will display a detailed breakdown of the currently selected save in the save selection menu.
 
-- "swapControllerBlockAndRecruitButtons" Can be set to true or false. If true, it will swap the "Recruit" and "Block" buttons on the controllers (LT/LB and RT/RB).
+- "swapPhoneNavigationButtons": Can be set to true or false. If true, it will swap the "Recruit" and "Block" buttons (Left and right on the phones) for the UI / menus. 
 
 - "vSyncCount": Can be set to 0, 1, 2, 3 or 4. 0 will deactivate the vertical sync and decouple the game’s framerate to the monitor refresh rate. Doing so will usually cause “screen tearing” but will allow to use frame limiters (see below). 1, the game default, will sync the framerate with the monitor’s refresh rate. Using 144hz monitor will make the game target a framerate of 144. As the number is the ratio between the monitor refresh rate and the framerate, 2 will make the game target a framerate of 72 (for the same 144hz monitor). Most user needs to keep that value to 1.
 
@@ -123,9 +146,31 @@ Following the order of the file, this is what you can modify:
 
 - "fixMaxStaminaBug": Can be set to true or false. If true, fix a bug that prevented the phone interface to display a maxed-out Stamina stat.
 
-- "activateTrainingMode": Can be set to true or false. If true, allows to use the F1, F2 and F3 keys to make the enemies invincible, use their nightmare variation and unable to use attacks respectively.
+- "activateTrainingMode": Can be set to true or false. If true, allows to use the F1 to F5 keys to switch on and off different features related to "combo training".
 
-- "enemiesScalingRatio": Can be set to any real number between 0.1 and 20. Will change the size of the enemies. :D  
+- "enemiesScalingRatio": Can be set to any real number between 0.1 and 20. Will change the size of the enemies. :D
+
+- "gameplayModifications": This section contains flags that change aspects of gameplay
+
+	- "activeRecruits": Can be set to true or false. If true, change the recruit system entirely. Recruits will now actively participate to the fight until they are taken down by the enemies or until the player left the current room.  Summoning a recruit costs a heart, as well as letting a recruit get KO'ed.  Press the recruit button again to dismiss before they are KOed.
+
+	- "quickComboOverride":  Can be set to true or false.  If true, after purchasing extensions to the quick combo, you can still do the finisher early by holding up while pressing quick attack.
+
+	- "backAttackCombo":  Can be set to true or false.  If true, in all combos where you can combo into a heavy attack, you can also combo into a back attack by holding back while pressing heavy attack.
+
+	- "backAttackAutoParry":  Can be set to true or false.  If true, all back attacks have an auto-parry property against all non-boss attacks coming from the back.
+
+	- "heavyAttackGuardBreak":  Can be set to true or false.  If true, forward + heavy attacks will break the guard of non-boss enemies.
+	
+	- "sharedRewards":  Can be set to true or false.  If true, all XP and money from fighting enemies will be shared between players in coop mode.
+	
+	- "monkMode": Can be set to true or false.  This is a challenge mode where you play in poverty.  No money will be earned (though you will start with all techniques unlocked, and burgers are free during the Godai burger quest).  Enemies will have a 20% health bonus, act 1 and 2 enemies will be slightly tougher, all bosses will have double health, and Sabuko will have a nice end-boss surprise for you.  In return, all characters will start with both Kyoko's and Misako's starting equipment.  You may want to put on those gym shorts, since you don't have a lot of other ways to get health back :)
+
+	- "alwaysKeepWeapons": Can be set to true or false.  If true, the player characters will keep their currently held weapon when entering a boss room.
+
+- "useJsonLocalizationData": Can be set to true or false.  If true, the game will use the localization file located in "RiverCityGirls_Data\StreamingAssets\LocalizationData" instead of its internal data.
+
+- "localizationKeys": A list of localization keys only used by the mod. Can also be used to replace any existing key used by the game.
 
 
 ## ** How to uninstall **
